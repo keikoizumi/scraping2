@@ -130,9 +130,9 @@ def dbconn(qerytype, date):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo WHERE dt LIKE '"+date+'%'"' ORDER BY dt DESC"
+            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE img_id LIKE '"+date+'%'"' ORDER BY dt DESC"
         elif qerytype == PASTDAY:
-            sql = "SELECT DISTINCT DATE_FORMAT(dt,'%Y-%m-%d') as dt FROM scrapingInfo ORDER BY dt DESC"
+            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 ORDER BY dt DESC"
 
         #クエリ発行
         print(sql)
@@ -188,11 +188,11 @@ def scrayping():
                 dt = "{0:%Y-%m-%d %H:%M:%S}".format(now)
                 c = conn.cursor()
                 #データ登録
-                sql = "INSERT INTO scraping.scrapingInfo(site_id,title,url,img_id,dt) VALUES (2,%s,%s,%s,%s)"
+                sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,url,img_id,dt) VALUES (2,%s,%s,%s,%s)"
                 c.execute(sql, (title, url, key, dt))
                 sql = 'SET @i := 0' 
                 c.execute(sql)
-                sql = 'UPDATE `scraping`.`scrapingInfo` SET id = (@i := @i +1);'
+                sql = 'UPDATE `scraping`.`scrapingInfo2` SET id = (@i := @i +1);'
                 c.execute(sql)
                 conn.commit()
                 conn.close()

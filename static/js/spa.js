@@ -113,7 +113,7 @@ function getPastDay() {
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
           } else {
             $('#ddmenu').empty(); 
-            $("#ddmenu").append('<option value="">PAST DATA</option>');
+            $("#ddmenu").append('<option value="">KEY WORDS</option>');
             for (var i = 0; i < data.length; i++) {
               //console.log(data);
               $("#ddmenu").append('<option value="'+data[i].dt+'"style="font-weight: 600;" >'+data[i].dt+'</option>');
