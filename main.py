@@ -15,6 +15,7 @@ import os
 #status
 PASTDAY = 'pastday'
 ALL = 'all'
+KEY = 'key'
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +47,7 @@ def postOther():
     data = request.json
     date = data['date']
     qerytype = data['other']
+
     url = dbconn(qerytype, date)
     #ID NULLチェック
     if isUrlCheck(url):
@@ -112,6 +114,9 @@ def isTypeCheck(jsonUrl):
 
 def dbconn(qerytype, date):
 
+    print(qerytype)
+    print(date)
+
     f = open('./conf/prop.json', 'r')
     info = json.load(f)
     f.close()
@@ -130,7 +135,9 @@ def dbconn(qerytype, date):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE img_id LIKE '"+date+'%'"' ORDER BY dt DESC"
+            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE dt LIKE '"+date+'%'"' ORDER BY dt DESC"
+        elif qerytype == KEY:
+            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE img_id LIKE '"+date+"'ORDER BY dt DESC"
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 ORDER BY dt DESC"
 
@@ -159,7 +166,7 @@ def scrayping():
     driver.get('https://www.google.com/')
  
     search = driver.find_element_by_name('q')
-    key = 'AI 自動化'
+    key = 'BIツール'
     search.send_keys(key) 
     search.submit() 
     time.sleep(3)     
