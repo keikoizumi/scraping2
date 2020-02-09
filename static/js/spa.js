@@ -261,7 +261,7 @@ function show(data) {
     dirNaeme = dirNaeme.substr(0,8);
 
       var id = i+1;
-      $('#table').append('<tr><td>'+data[i].img_id+'</br>('+data[i].dt+')</td><td><a href='+data[i].url+' target="_blank" style="font-size: x-large;">'+data[i].title+'</a></td></tr>');
+      $('#table').append('<tr><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td></tr>');
     }  
   });
   return data;
