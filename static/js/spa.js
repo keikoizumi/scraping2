@@ -1,7 +1,8 @@
 //グローバル変数
 var items = [];
-var tUrl = 'http://localhost:8083/';
+var tUrl = 'http://localhost:8084/';
 var all = 'all';
+var key = 'key';
 var sflag = 0;
 var savedata;
 
@@ -11,23 +12,32 @@ function today() {
   return formatted;
 }
 
-function scraping() {  
+function scraping(sendkey) {  
   $(function(){
     var targetUrl = tUrl+'scraping';
+
+    console.log(sendkey);
+    var request = {
+      'sendkey': sendkey
+    };
       $.ajax({
-          url: targetUrl,
-          type: 'POST',
-          scriptCharset: 'utf-8',
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
       }).done(function(data){ 
+          console.log(data);
           $('#table').empty();
           $('#iimg').empty();
-          if (data == 'True') {
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FFFF00;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+          //if (data == 'True') {
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             var pastDate = null; 
             other(all,pastDate);
-          } else {
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          }
+          //} else {
+          //  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          //}
           sflag = 0;
           getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -35,7 +45,6 @@ function scraping() {
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          alert('通信失敗');
           sflag = 0;
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
@@ -55,14 +64,19 @@ function other(other,pastDate) {
   }
 
   if (date != null) {
-    if (other == all) {
+    if (other == key) {
       var request = {
           'date' : date,
-          'other': all
+          'other': key
       };
-    } 
+    } else if(other == all){
+      var request = {
+        'date' : date,
+        'other': all
+        };
+    }
   } else {
-    alert('不正な日付');
+    alert('不正な値');
     var request = {
       'date' : today(),
       'other': all
@@ -87,8 +101,6 @@ function other(other,pastDate) {
             savedata = data;
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          alert('通信失敗');
-          window.location.reload();
           console.log(data);
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
@@ -120,8 +132,6 @@ function getPastDay() {
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          alert('通信失敗');
-          window.location.reload();
           console.log(data);
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
@@ -199,7 +209,10 @@ $(function(){
   $('#start').on('click',function(){
     if (sflag == 0) {
       sflag = 1;
-      scraping();
+      sendkey= $("#key").val();
+      console.log('sendkey');
+      scraping(sendkey);
+
       $('#table').empty();
       $('#iimg').empty();
       $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
@@ -226,7 +239,7 @@ $(function() {
 $(function() {
   $('#ddmenu').on('click',function() {
     var pastDate = $("#ddmenu").val();
-    other(all,pastDate);
+    other(key,pastDate);
   });
 });
 
@@ -248,7 +261,7 @@ function show(data) {
     dirNaeme = dirNaeme.substr(0,8);
 
       var id = i+1;
-      $('#table').append('<tr><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size: x-large;">'+data[i].title+'</a></br>('+data[i].dt+')</td></tr>');
+      $('#table').append('<tr><td>'+data[i].img_id+'</br>('+data[i].dt+')</td><td><a href='+data[i].url+' target="_blank" style="font-size: x-large;">'+data[i].title+'</a></td></tr>');
     }  
   });
   return data;

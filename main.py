@@ -71,15 +71,18 @@ def pastDay():
         jsonUrl = makeJson(url)
         print(type(jsonUrl))
         return jsonUrl
-    else:
+    else:   
         return postOther()
 
 @post('/scraping')
-def scraping():
-    if scrayping():
-        return 'False'
-    else:
-        return 'True'
+def startscraping():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    print(sendkey)
+    
+    scraping(sendkey)
+
 
 i = 0
 def isUrlCheck(url):
@@ -113,7 +116,7 @@ def isTypeCheck(jsonUrl):
     
 
 def dbconn(qerytype, date):
-
+    print("q")
     print(qerytype)
     print(date)
 
@@ -146,28 +149,26 @@ def dbconn(qerytype, date):
         cur.execute(sql)
         cur.statement    
         url = cur.fetchall()
-
+        print(url)
         if url is not None:
             return url
         else:
             return None
-
     except:
-        import traceback
-        traceback.print_exc()
         print("DBエラーが発生しました")
         return None
     finally:
         cur.close()
         conn.close()
 
-def scrayping():
+def scraping(sendkey):
+    print("scraping start")
     driver = webdriver.Chrome(BASE_DIR+'./static/chromedriver.exe')
     driver.get('https://www.google.com/')
  
     search = driver.find_element_by_name('q')
-    key = 'BIツール'
-    search.send_keys(key) 
+    #sendkey = 'DWHとは'
+    search.send_keys(sendkey) 
     search.submit() 
     time.sleep(3)     
 
@@ -196,7 +197,8 @@ def scrayping():
                 c = conn.cursor()
                 #データ登録
                 sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,url,img_id,dt) VALUES (2,%s,%s,%s,%s)"
-                c.execute(sql, (title, url, key, dt))
+                print(sql)
+                c.execute(sql, (title, url, sendkey, dt))
                 sql = 'SET @i := 0' 
                 c.execute(sql)
                 sql = 'UPDATE `scraping`.`scrapingInfo2` SET id = (@i := @i +1);'
@@ -213,10 +215,10 @@ def scrayping():
                 time.sleep(3) 
     except:
         driver.quit()
-        return None
+        print("DBエラーが発生しました")    
     finally:
         # ブラウザを閉じる
         driver.quit()  
               
 if __name__ == "__main__":
-    run(host='localhost', port=8083, reloader=True, debug=True)
+    run(host='localhost', port=8084, reloader=True, debug=True)
