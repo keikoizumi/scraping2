@@ -1,6 +1,6 @@
 //グローバル変数
 var items = [];
-var tUrl = 'http://localhost:8084/';
+var tUrl = 'http://localhost:8085/';
 var all = 'all';
 var key = 'key';
 var sflag = 0;
@@ -138,6 +138,77 @@ function getPastDay() {
       });
   });
 }
+
+function delwords() {  
+  $(function(){
+    var targetUrl = tUrl+'getPastDay';    
+      $.ajax({
+          url: targetUrl,
+          type: 'POST',
+          contentType: 'application/JSON',
+          dataType: 'JSON',
+          data : null,
+          scriptCharset: 'utf-8',
+      }).done(function(data) { 
+          if (data == null || data == '' || data[0] == '') {
+            $('#table').empty();
+            $('#iimg').empty();
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+          } else {
+            $('#table').empty(); 
+            for (var i = 0; i < data.length; i++) {
+              //console.log(data);
+              $('#table').append('<tr><td>'+data[i].dt+'</td><td><button type="button" id="'+data[i].dt+'" class="godel" class="btn btn-primary">DELETE</button></td></tr>');
+            }
+          }
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
+function godelwords(sendkey) {  
+  $(function(){
+    var targetUrl = tUrl+'del';
+
+    console.log(sendkey);
+    var request = {
+      'sendkey': sendkey
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          //if (data == 'True') {
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+            var pastDate = null; 
+            other(all,pastDate);
+          //} else {
+          //  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          //}
+          sflag = 0;
+          getPastDay();
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //CSV download
 //jsonをcsv文字列に編集する
@@ -240,6 +311,24 @@ $(function() {
   $('#ddmenu').on('click',function() {
     var pastDate = $("#ddmenu").val();
     other(key,pastDate);
+  });
+});
+
+$(function() {
+  $('#del').on('click',function() {
+    delwords();
+  });
+});
+
+
+$(function() {
+  $(document).on('click','.godel',function() {
+    //sendkey= $("#delkey").val();
+    var sendkey =  $(this).attr("id");
+    window.confirm("データは完全に削除されます。本当によろしいですか？");
+    console.log('sendkey');
+    console.log(sendkey);
+    godelwords(sendkey);
   });
 });
 

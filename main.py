@@ -16,6 +16,7 @@ import os
 PASTDAY = 'pastday'
 ALL = 'all'
 KEY = 'key'
+DEL = 'del'
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -79,10 +80,19 @@ def startscraping():
     #値取得
     data = request.json
     sendkey = data['sendkey']
+
+    scraping(sendkey)
+    
+    
+@post('/del')
+def delete():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
     print(sendkey)
     
-    scraping(sendkey)
-
+    qerytype = DEL
+    dbconn(qerytype, sendkey)
 
 i = 0
 def isUrlCheck(url):
@@ -143,13 +153,20 @@ def dbconn(qerytype, date):
             sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE img_id LIKE '"+date+"'ORDER BY dt DESC"
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 ORDER BY dt DESC"
+        elif qerytype == DEL:
+            sql = "DELETE FROM scrapingInfo2 where img_id = '"+date+"'"
+        
+            print(sql)
 
         #クエリ発行
-        print(sql)
-        cur.execute(sql)
-        cur.statement    
-        url = cur.fetchall()
-        print(url)
+        if qerytype == DEL:
+            cur.execute(sql)
+            conn.commit()
+        else:
+            cur.execute(sql)
+            cur.statement    
+            url = cur.fetchall()
+
         if url is not None:
             return url
         else:
@@ -163,11 +180,12 @@ def dbconn(qerytype, date):
 
 def scraping(sendkey):
     print("scraping start")
+    print(sendkey)
     driver = webdriver.Chrome(BASE_DIR+'./static/chromedriver.exe')
     driver.get('https://www.google.com/')
  
     search = driver.find_element_by_name('q')
-    #sendkey = 'DWHとは'
+    
     search.send_keys(sendkey) 
     search.submit() 
     time.sleep(3)     
@@ -221,4 +239,4 @@ def scraping(sendkey):
         driver.quit()  
               
 if __name__ == "__main__":
-    run(host='localhost', port=8084, reloader=True, debug=True)
+    run(host='localhost', port=8085, reloader=True, debug=True)
