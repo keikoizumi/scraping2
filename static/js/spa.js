@@ -158,7 +158,7 @@ function delwords() {
             $('#table').empty(); 
             for (var i = 0; i < data.length; i++) {
               //console.log(data);
-              $('#table').append('<tr><td>'+data[i].dt+'</td><td><button type="button" id="'+data[i].dt+'" class="godel" class="btn btn-primary">DELETE</button></td></tr>');
+              $('#table').append('<tr><td>'+data[i].dt+'</td><td><button type="button" id="'+data[i].dt+'" class="godel btn-danger" class="btn btn-primary">DELETE</button></td></tr>');
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
