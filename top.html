@@ -10,7 +10,7 @@
  <!-- Bootstrap CSS -->
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
  
-<title>WSWP</title> 
+<title>WSwP</title> 
 
 </head>
 <body>
@@ -20,7 +20,7 @@
   <nav class="navbar navbar-expand-md  navbar-light shadow sticky-top" style="background-color: rgb(1, 1, 1);">
     <div class="navbar-brand"><img src="./static/img/ico/images.png" width="70" height="60" alt="ロゴ"></div>
       <div class="d-inline-block mr-5" style="font-style: italic;color: aliceblue;font-size:xx-large ;font-weight: 700;">
-         Web Scraping with Python
+         WSwP
       </div>
     <div class= "m-2 mt-3">
       <div class="row">
@@ -55,6 +55,18 @@
           </div>
           <div class="d-inline-block">
             <div class="m-2">
+              <button type="button" id="ddfavorite"
+                class="btn btn-warning btn-lg shadow">
+            　  FAVORITE
+         　 　</button>
+          　　<div class="dropdown-menu" aria-labelledby="ddfavorite">
+                <a class="dropdown-item" href="#">登録済</a>
+                <a class="dropdown-item" href="#">未録済</a>
+              </div>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
               <div class="csv">
                 <a href="#" class="btn btn-secondary btn-lg shadow"  role="button" onclick="output();return false;">CSV DOWNLOAD</a>
               </div>
@@ -62,7 +74,7 @@
           </div>
           <div class="d-inline-block">
             <div class="m-2">
-                <button type="button" id="del" class="btn btn-danger btn-lg shadow" style="font-weight: 600;">DELETE</button>              </div>
+                <button type="button" id="del" class="btn btn-danger btn-lg shadow" style="font-weight: 600;">KEY DELETE</button>              </div>
             </div>
           </div>
         </div>
@@ -74,11 +86,10 @@
 
   <div class="container" >
     
-    
     <!-- データ配置 -->
 
     <div class="display-area">
-      <div class="m-2 mt-3">
+      <div class="m-1 mt-3">
         <table class="table">
           <thead>
             <tr>
@@ -123,12 +134,17 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                  <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label>
-                  <input type="text" class="form-control" id="key">
+                  <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label><br>
+                  page : <p>
+                            <button class="btn btn-secondary shadow" onclick="countUp();">＋</button>
+                                <span id="pageCount" style="margin: 10px;">1</span>
+                                <button class="btn btn-secondary shadow" onclick="countDown();">−</button>
+                         </p>
+                  key word : <input type="text" class="form-control" id="key">
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
                   <button type="button" id="start" class="btn btn-primary" data-dismiss="modal">START</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
                 </div>
             </div>
           </div>
@@ -148,5 +164,21 @@
 
   <!--独自js-->
   <script src="/static/js/spa.js"></script>
+  <!--PageCount-->
+  <script type="text/javascript">
+    var $countA = 1;
+
+    function countUp() {
+      if ($countA < 10) {
+        document.getElementById( "pageCount" ).innerHTML = ++$countA;
+      }
+    }
+    function countDown() {
+      if (1 < $countA) {
+        document.getElementById( "pageCount" ).innerHTML = --$countA;
+      }
+    }
+    
+    </script>
   </body>
 </html>

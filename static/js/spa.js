@@ -371,6 +371,21 @@ $(function() {
   });
 });
 
+//1つ削除
+$(function() {
+  $(document).on('click','.one-del',function() {
+    var id =  $(this).attr("id");
+    var sendkey = id.substr(1);
+    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
+    console.log('sendkey');
+    console.log(sendkey);
+    if (ret == true) {
+      godelwords(sendkey);
+      console.log('send');
+    }
+  });
+});
+
 //お気に入り
 $(function() {
   $(document).on('click','.favorite',function() {
@@ -401,11 +416,10 @@ function show(data) {
 
     var favorite = data[i].favorite;
     if (favorite == '0') {
-      $('#table').append('<tr><td><button type="button" id="1'+data[i].id+'" class="favorite btn-primary">未登録</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td></tr>');
+      $('#table').append('<tr><td><button type="button" id="1'+data[i].id+'" class="favorite btn-primary">未登録</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     }else if (favorite == '1') {
-      $('#table').append('<tr><td><button type="button" id="0'+data[i].id+'" class="favorite btn-danger">登録済</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td></tr>');
+      $('#table').append('<tr><td><button type="button" id="0'+data[i].id+'" class="favorite btn-danger">登録済</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     } 
-
       //var id = i+1;
     }  
   });
