@@ -172,10 +172,13 @@ def dbconn(qerytype, sendkey):
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == DEL:
+            #キーワード削除
             sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"
         elif qerytype == REGFAVO:
+            #お気に入り登録
             sql = "UPDATE scraping.scrapinginfo2 SET favorite = '1' WHERE id = '"+sendkey+"'"
         elif qerytype == DELFAVO:
+            #お気に入り解除
             sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+sendkey+"'"
 
         print(sql)
@@ -220,6 +223,7 @@ def scraping(sendkey):
     i_max = 5
     try:
         while i <= i_max:
+            #classがchromeのバージョンによてclassが変更されることあり
             class_group = driver.find_elements_by_class_name('g')
             print('before for loop')
             print(class_group)
