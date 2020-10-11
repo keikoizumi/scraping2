@@ -31,13 +31,9 @@ function scraping(sendkey) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
-          //if (data == 'True') {
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             var pastDate = null; 
             other(all,pastDate);
-          //} else {
-          //  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          //}
           sflag = 0;
           getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -127,7 +123,6 @@ function getPastDay() {
             $('#ddmenu').empty(); 
             $("#ddmenu").append('<option value="">KEY WORDS</option>');
             for (var i = 0; i < data.length; i++) {
-              //console.log(data);
               $("#ddmenu").append('<option value="'+data[i].dt+'"style="font-weight: 600;" >'+data[i].dt+'</option>');
             }
           }
@@ -172,7 +167,6 @@ function delwords() {
 function godelwords(sendkey) {  
   $(function(){
     var targetUrl = tUrl+'del';
-
     console.log(sendkey);
     var request = {
       'sendkey': sendkey
@@ -188,13 +182,46 @@ function godelwords(sendkey) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
-          //if (data == 'True') {
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             var pastDate = null; 
             other(all,pastDate);
-          //} else {
-          //  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          //}
+          sflag = 0;
+          //getPastDay();
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
+//お気に入り
+function gofavorite(sendkey, type) {  
+  $(function(){
+    var targetUrl = tUrl+'favorite';
+    console.log(sendkey);
+    var request = {
+      'sendkey': sendkey
+      ,'type': type
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+            var pastDate = null; 
+            other(all,pastDate);
           sflag = 0;
           getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -281,9 +308,7 @@ $(function(){
     if (sflag == 0) {
       sflag = 1;
       sendkey= $("#key").val();
-      console.log('sendkey');
       scraping(sendkey);
-
       $('#table').empty();
       $('#iimg').empty();
       $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
@@ -320,23 +345,34 @@ $(function() {
   });
 });
 
-
+//削除
 $(function() {
   $(document).on('click','.godel',function() {
-    //sendkey= $("#delkey").val();
     var sendkey =  $(this).attr("id");
-    window.confirm("データは完全に削除されます。本当によろしいですか？");
+    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
     console.log('sendkey');
     console.log(sendkey);
-    godelwords(sendkey);
+    if (ret == true) {
+      godelwords(sendkey);
+      console.log('send');
+    }
   });
 });
 
-//$(function() {
-//  $('.reset').on('click',function() {
-//    window.location.reload();
-//  });
-//});
+//お気に入り
+$(function() {
+  $(document).on('click','.favorite',function() {
+    var sendkey =  $(this).attr("id");
+    console.log('sendkey');
+    console.log(sendkey);
+    
+    var type =  '1';
+    console.log('type');
+    console.log(type);
+
+    gofavorite(sendkey,type);
+  });
+});
 
 function show(data) {
   $(function() {
@@ -350,7 +386,7 @@ function show(data) {
     dirNaeme = dirNaeme.substr(0,8);
 
       var id = i+1;
-      $('#table').append('<tr><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td></tr>');
+      $('#table').append('<tr><td><button type="button" id="'+data[i].id+'" class="favorite btn-danger">favorite</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td></tr>');
     }  
   });
   return data;

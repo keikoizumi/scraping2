@@ -4,7 +4,7 @@ from selenium import webdriver
 import mysql.connector
 import datetime
 import os.path
-import random   
+import random
 import string 
 import random
 import time
@@ -17,15 +17,13 @@ PASTDAY = 'pastday'
 ALL = 'all'
 KEY = 'key'
 DEL = 'del'
+REGFAVO = 'regfavo'
+DELFAVO = 'delfavo'
+
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-
-#CSS
-@route('/static/css/<filename:path>')
-def send_static_css(filename):
-    return static_file(filename, root=f'{STATIC_DIR}/css')
 
 #JS
 @route('/static/js/<filename:path>')
@@ -93,6 +91,26 @@ def delete():
     
     qerytype = DEL
     dbconn(qerytype, sendkey)
+    pastDay()
+
+
+#お気に入り
+@post('/favorite')
+def favorite():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    print(sendkey)
+    favotype = data['type']
+    print(favotype)
+    
+    if favotype == '1':
+        qerytype = REGFAVO
+    else:
+        qerytype = DELFAVO
+    print(favotype)
+
+    dbconn(qerytype, sendkey)
 
 i = 0
 def isUrlCheck(url):
@@ -125,10 +143,10 @@ def isTypeCheck(jsonUrl):
         jsonDumps(jsonUrl)
     
 
-def dbconn(qerytype, date):
+def dbconn(qerytype, sendkey):
     print("q")
     print(qerytype)
-    print(date)
+    print(sendkey)
 
     f = open('./conf/prop.json', 'r')
     info = json.load(f)
@@ -148,21 +166,27 @@ def dbconn(qerytype, date):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE dt LIKE '"+date+'%'"' ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
         elif qerytype == KEY:
-            sql = "SELECT site_id,title,url,img_id,CAST(dt AS CHAR) as dt FROM scrapingInfo2 WHERE img_id LIKE '"+date+"'ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC"
         elif qerytype == PASTDAY:
-            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 ORDER BY dt DESC"
+            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == DEL:
-            sql = "DELETE FROM scrapingInfo2 where img_id = '"+date+"'"
-        
-            print(sql)
+            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"
+        elif qerytype == REGFAVO:
+            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '1' WHERE id = '"+sendkey+"'"
+        elif qerytype == DELFAVO:
+            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+sendkey+"'"
+
+        print(sql)
 
         #クエリ発行
-        if qerytype == DEL:
+        if qerytype == DEL or qerytype == REGFAVO or qerytype == DELFAVO:
+            print("update/del")
             cur.execute(sql)
             conn.commit()
         else:
+            print("select")
             cur.execute(sql)
             cur.statement    
             url = cur.fetchall()
@@ -170,11 +194,13 @@ def dbconn(qerytype, date):
         if url is not None:
             return url
         else:
+            print('None')
             return None
     except:
         print("DBエラーが発生しました")
         return None
     finally:
+        print('finally')
         cur.close()
         conn.close()
 
@@ -194,8 +220,11 @@ def scraping(sendkey):
     i_max = 5
     try:
         while i <= i_max:
-            class_group = driver.find_elements_by_class_name('r')
+            class_group = driver.find_elements_by_class_name('g')
+            print('before for loop')
+            print(class_group)
             for elem in class_group:
+                print('after for loop')
                 title = elem.find_element_by_class_name('LC20lb').text 
                 url = elem.find_element_by_tag_name('a').get_attribute('href') 
 
@@ -215,6 +244,7 @@ def scraping(sendkey):
                 c = conn.cursor()
                 #データ登録
                 sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,url,img_id,dt) VALUES (2,%s,%s,%s,%s)"
+                print('insert')
                 print(sql)
                 c.execute(sql, (title, url, sendkey, dt))
                 sql = 'SET @i := 0' 
