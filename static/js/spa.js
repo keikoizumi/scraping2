@@ -13,6 +13,42 @@ function today() {
   return formatted;
 }
 
+//総件数
+function allcount() {
+    $(function(){
+      var targetUrl = tUrl+'allcount';
+        $.ajax({
+          url: targetUrl,
+          type: 'POST',
+          contentType: 'application/JSON',
+          scriptCharset: 'utf-8',
+        }).done(function(data){ 
+            console.log(data);
+            //$('.count').empty();
+             $('.count').attr('data-num', 100);
+             console.log(data[0].allcount);
+             console.log(data[1].allcount);
+             console.log(data.allcount);
+             console.log(data[0]);
+             console.log(data[1]);
+             console.log(data[3]);
+             console.log(data);
+              //var pastDate = null; 
+              //other(all,pastDate);
+            sflag = 0;
+            //getPastDay();
+          }).fail(function(data, XMLHttpRequest, textStatus) {
+            console.log(data);
+            $('#table').empty();
+            $('#iimg').empty();
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+            sflag = 0;
+            console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+            console.log("textStatus     : " + textStatus);
+        });
+    });
+}
+
 //スクレイピング
 function scraping(sendkey) {  
   $(function(){
@@ -193,7 +229,44 @@ function godelwords(sendkey) {
             //var pastDate = null; 
             //other(all,pastDate);
           sflag = 0;
-          //getPastDay();
+          getPastDay();
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
+//1つ削除
+function godelonewords(sendkey) {  
+  $(function(){
+    var targetUrl = tUrl+'delone';
+    console.log(sendkey);
+    var request = {
+      'sendkey': sendkey
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+            //delwords();
+            var pastDate = null; 
+            other(all,pastDate);
+          sflag = 0;
+          getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -304,11 +377,38 @@ function output(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 window.onload = function() {
   //today
+  allcount();
   var pastDate = null; 
   other(all,pastDate);
   getPastDay();
 }
 
+//総件数
+function allcouont() {
+  $(function(){
+    var countElm = $('.count'),
+    countSpeed = 5;
+  
+    countElm.each(function(){
+        var self = $(this),
+        countMax = self.attr('data-num'),
+        thisCount = self.text(),
+        countTimer;
+  
+        function timer(){
+            countTimer = setInterval(function(){
+                var countNext = thisCount++;
+                self.text(countNext);
+  
+                if(countNext == countMax){
+                    clearInterval(countTimer);
+                }
+            },countSpeed);
+        }
+        timer();
+    });
+  });
+}
 //scraping
 $(function(){ 
   $('#start').on('click',function(){
@@ -379,7 +479,7 @@ $(function() {
     console.log('sendkey');
     console.log(sendkey);
     if (ret == true) {
-      godelwords(sendkey);
+      godelonewords(sendkey);
       console.log('send');
     }
   });
@@ -404,7 +504,8 @@ $(function() {
 //テーブル表示
 function show(data) {
   $(function() {
-    
+    //総件数
+    allcouont();
     $('#table').empty();
     $('#iimg').empty();
     for (var i = 0; i < data.length; i++) {
@@ -415,16 +516,11 @@ function show(data) {
 
     var favorite = data[i].favorite;
     if (favorite == '0') {
-      $('#table').append('<tr><td><button type="button" id="1'+data[i].id+'" class="favorite btn-primary">未登録</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="one-del btn btn-success">memo</button></td></tr>');
+      $('#table').append('<tr><td><button type="button" id="1'+data[i].id+'" class="favorite btn-primary">未登録</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
     }else if (favorite == '1') {
-      $('#table').append('<tr><td><button type="button" id="0'+data[i].id+'" class="favorite btn-danger">登録済</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="one-del btn btn-success">memo</button></td></tr>');
+      $('#table').append('<tr><td><button type="button" id="0'+data[i].id+'" class="favorite btn-danger">登録済</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
     } 
-      //var id = i+1;
     }  
   });
   return data;
 }
-
-
-
-

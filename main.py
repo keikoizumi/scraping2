@@ -1,5 +1,6 @@
 # coding:utf-8
 from bottle import request, route, get, post, hook, response, static_file, template, redirect, run
+from selenium.webdriver.chrome.options import Options
 from selenium import webdriver 
 import mysql.connector
 import datetime
@@ -17,8 +18,10 @@ PASTDAY = 'pastday'
 ALL = 'all'
 KEY = 'key'
 DEL = 'del'
+DELONE= 'delone'
 REGFAVO = 'regfavo'
 DELFAVO = 'delfavo'
+ALLCOUNT = 'allcount'
 
 
 #ファイルパス
@@ -39,6 +42,21 @@ def send_static_img(filename):
 @route("/")
 def index():
     return template('top')
+
+#総件数
+@post('/allcount')
+def startscraping():
+    #値取得
+    qerytype = ALLCOUNT
+    sendkey = None
+    url = dbconn(qerytype, sendkey)
+    #ID NULLチェック
+    if isUrlCheck(url):
+        print('checkedUrl:')
+        #json作成
+        jsonUrl = makeJson(url)
+        print(type(jsonUrl))
+        return jsonUrl
 
 @post('/other')
 def postOther():
@@ -73,6 +91,7 @@ def pastDay():
     else:   
         return postOther()
 
+#スクレイピング
 @post('/scraping')
 def startscraping():
     #値取得
@@ -81,7 +100,7 @@ def startscraping():
 
     scraping(sendkey)
     
-    
+#キーワード削除
 @post('/del')
 def delete():
     #値取得
@@ -93,6 +112,18 @@ def delete():
     dbconn(qerytype, sendkey)
     pastDay()
 
+#1つ削除
+@post('/delone')
+def delone():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    print(sendkey)
+    print('/delone')
+    
+    qerytype = DELONE
+    dbconn(qerytype, sendkey)
+    pastDay()
 
 #お気に入り
 @post('/favorite')
@@ -166,25 +197,30 @@ def dbconn(qerytype, sendkey):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC LIMIT 500"
         elif qerytype == KEY:
-            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == DEL:
             #キーワード削除
             sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"
+        elif qerytype == DELONE:
+            #1つ削除
+            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE id = '"+sendkey+"'"
         elif qerytype == REGFAVO:
             #お気に入り登録
             sql = "UPDATE scraping.scrapinginfo2 SET favorite = '1' WHERE id = '"+sendkey+"'"
         elif qerytype == DELFAVO:
             #お気に入り解除
             sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+sendkey+"'"
+        elif qerytype == ALLCOUNT:
+            sql = "SELECT count(*) as allcount FROM scrapingInfo2 WHERE delflg = '0'"
 
         print(sql)
 
         #クエリ発行
-        if qerytype == DEL or qerytype == REGFAVO or qerytype == DELFAVO:
+        if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO:
             print("update/del")
             cur.execute(sql)
             conn.commit()
@@ -210,9 +246,17 @@ def dbconn(qerytype, sendkey):
 def scraping(sendkey):
     print("scraping start")
     print(sendkey)
+    # Chrome Optionsの設定
+    options = Options()
+    options.add_argument('--headless')                 # headlessモードを使用する
+    options.add_argument('--disable-gpu')              # headlessモードで暫定的に必要なフラグ(そのうち不要になる)
+    options.add_argument('--disable-extensions')       # すべての拡張機能を無効にする。ユーザースクリプトも無効にする
+    options.add_argument('--proxy-server="direct://"') # Proxy経由ではなく直接接続する
+    options.add_argument('--proxy-bypass-list=*')      # すべてのホスト名
+    options.add_argument('--start-maximized')          # 起動時にウィンドウを最大化する
     driver = webdriver.Chrome(BASE_DIR+'./static/chromedriver.exe')
     driver.get('https://www.google.com/')
- 
+    driver.implicitly_wait(30)
     search = driver.find_element_by_name('q')
     
     search.send_keys(sendkey) 
@@ -220,7 +264,7 @@ def scraping(sendkey):
     time.sleep(3)     
 
     i = 1
-    i_max = 5
+    i_max = 20
     try:
         while i <= i_max:
             #classがchromeのバージョンによてclassが変更されることあり
@@ -257,16 +301,16 @@ def scraping(sendkey):
                 c.execute(sql)
                 conn.commit()
                 conn.close()
-
             if driver.find_elements_by_id('pnnext') == []:
                 i = i_max + 1
             else:
                 next_page = driver.find_element_by_id('pnnext').get_attribute('href')
                 driver.get(next_page)   
-                i = i + 1               
-                time.sleep(3) 
+                i = i + 1 
+                print("next page")              
+                time.sleep(5) 
     except:
-        driver.quit()
+        #driver.quit()
         print("DBエラーが発生しました")    
     finally:
         # ブラウザを閉じる
