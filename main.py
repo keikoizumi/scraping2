@@ -197,9 +197,9 @@ def dbconn(qerytype, sendkey):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC LIMIT 500"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
         elif qerytype == KEY:
-            sql = "SELECT id,site_id,title,url,img_id,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == DEL:
@@ -273,7 +273,8 @@ def scraping(sendkey):
             print(class_group)
             for elem in class_group:
                 print('after for loop')
-                title = elem.find_element_by_class_name('LC20lb').text 
+                title = elem.find_element_by_class_name('LC20lb').text
+                detail = elem.find_element_by_class_name('IsZvec').text
                 url = elem.find_element_by_tag_name('a').get_attribute('href') 
 
                 #DB設定
@@ -291,10 +292,10 @@ def scraping(sendkey):
                 dt = "{0:%Y-%m-%d %H:%M:%S}".format(now)
                 c = conn.cursor()
                 #データ登録
-                sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,url,img_id,dt) VALUES (2,%s,%s,%s,%s)"
+                sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,detail,url,img_id,dt) VALUES (2,%s,%s,%s,%s,%s)"
                 print('insert')
                 print(sql)
-                c.execute(sql, (title, url, sendkey, dt))
+                c.execute(sql, (title, detail, url, sendkey, dt))
                 sql = 'SET @i := 0' 
                 c.execute(sql)
                 sql = 'UPDATE `scraping`.`scrapingInfo2` SET id = (@i := @i +1);'

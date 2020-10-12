@@ -514,12 +514,20 @@ function show(data) {
     var dirNaeme = dirDay.replace( /-/g , "" );
     dirNaeme = dirNaeme.substr(0,8);
 
+    var no = i+1;
+
     var favorite = data[i].favorite;
     if (favorite == '0') {
-      $('#table').append('<tr><td><button type="button" id="1'+data[i].id+'" class="favorite btn-primary">未登録</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
+      var favo = 1;
+      var favoword = '未登録';
+      var color = 'btn-primary'
     }else if (favorite == '1') {
-      $('#table').append('<tr><td><button type="button" id="0'+data[i].id+'" class="favorite btn-danger">登録済</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
+      var favo = 0;
+      var favoword = '登録済';
+      var color = 'btn-danger';
     } 
+    //$('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
+    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+data[i].detail+'</td><td>'+data[i].memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     }  
   });
   return data;
