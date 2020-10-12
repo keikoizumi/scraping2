@@ -125,7 +125,7 @@ function other(other,pastDate) {
   var targetUrl = tUrl+'other';
   var date = null;
 
-  if (pastDate == null || pastDate == '') {
+  if (pastDate == null) {
     date = today();  
   } else {
     date = pastDate;
@@ -524,7 +524,7 @@ $(function() {
     if (id == 'today') {
       other(all,pastDate);
     } else {
-      var pastDate = null; 
+      var pastDate = ''; 
       other(all,pastDate);
       getPastDay();
     }
@@ -641,10 +641,12 @@ function show(data) {
       var read = 1;
       var readword = '未読';
       var readcolor = 'btn-primary'
+      var readedcolor = '';
     } else if (readflg == '1') {
       var read = 0;
       var readword = '既読';
       var readcolor = 'btn-secondary';
+      var readedcolor = 'table-dark';
     } 
 
     //詳細
@@ -657,8 +659,12 @@ function show(data) {
     var memo = data[i].memo;
     if (memo == null) {
       memo = 'メモはありません'
+      var memocolor = '';
+    } else {
+      var memocolor = 'btn-warning';
     }
-    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+detail+'</td><td>'+memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">delete</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">memo</button></td></tr>');
+
+    $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+memo+'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     }  
   });
   return data;
