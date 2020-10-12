@@ -330,9 +330,6 @@ function gofavorite(sendkey, type) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             var pastDate = null; 
             other(all,pastDate);
           sflag = 0;
@@ -367,9 +364,6 @@ function goread(sendkey, type) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             var pastDate = null; 
             other(all,pastDate);
           sflag = 0;
