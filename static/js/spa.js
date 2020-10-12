@@ -336,7 +336,7 @@ function gofavorite(sendkey, type) {
             var pastDate = null; 
             other(all,pastDate);
           sflag = 0;
-          getPastDay();
+          //getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -349,6 +349,42 @@ function gofavorite(sendkey, type) {
   });
 }
 
+//既読
+function goread(sendkey, type) {  
+  $(function(){
+    var targetUrl = tUrl+'read';
+    console.log(sendkey);
+    var request = {
+      'sendkey': sendkey
+      ,'type': type
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+            var pastDate = null; 
+            other(all,pastDate);
+          sflag = 0;
+          //getPastDay();
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //CSV download
 //jsonをcsv文字列に編集する
@@ -554,6 +590,23 @@ $(function() {
   });
 });
 
+//既読
+$(function() {
+  $(document).on('click','.read',function() {
+    var id =  $(this).attr("id");
+    var sendkey = id.substr(1);
+    console.log('sendkey');
+    console.log(sendkey);
+    
+    var type = id.substr(0,1);
+    console.log('type');
+    console.log(type);
+
+    goread(sendkey,type);
+  });
+});
+
+
 //テーブル表示
 function show(data) {
   $(function() {
@@ -580,6 +633,18 @@ function show(data) {
       var favo = 0;
       var favoword = '登録済';
       var color = 'btn-danger';
+    }
+
+    //既読
+    var readflg = data[i].readflg;
+    if (readflg == '0') {
+      var read = 1;
+      var readword = '未読';
+      var readcolor = 'btn-primary'
+    } else if (readflg == '1') {
+      var read = 0;
+      var readword = '既読';
+      var readcolor = 'btn-secondary';
     } 
 
     //詳細
@@ -593,7 +658,7 @@ function show(data) {
     if (memo == null) {
       memo = 'メモはありません'
     }
-    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+detail+'</td><td>'+memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">delete</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">memo</button></td></tr>');
+    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+detail+'</td><td>'+memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">delete</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">memo</button></td></tr>');
     }  
   });
   return data;

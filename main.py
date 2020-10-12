@@ -21,6 +21,8 @@ DEL = 'del'
 DELONE= 'delone'
 REGFAVO = 'regfavo'
 DELFAVO = 'delfavo'
+REGREAD = 'regread'
+DELREAD = 'delread'
 ALLCOUNT = 'allcount'
 MEMO = 'memo'
 
@@ -144,6 +146,24 @@ def favorite():
 
     dbconn(qerytype, sendkey)
 
+#既読
+@post('/read')
+def read():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    print(sendkey)
+    favotype = data['type']
+    print(favotype)
+    
+    if favotype == '1':
+        qerytype = REGREAD
+    else:
+        qerytype = DELREAD
+    print(favotype)
+
+    dbconn(qerytype, sendkey)
+
 #メモ
 @post('/memo')
 def memo():
@@ -211,9 +231,9 @@ def dbconn(qerytype, sendkey):
     try:    
         #接続クエリ
         if qerytype == ALL:
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
         elif qerytype == KEY:
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
         elif qerytype == PASTDAY:
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == DEL:
@@ -228,13 +248,19 @@ def dbconn(qerytype, sendkey):
         elif qerytype == DELFAVO:
             #お気に入り解除
             sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+sendkey+"'"
+        elif qerytype == REGREAD:
+            #既読
+            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '1' WHERE id = '"+sendkey+"'"
+        elif qerytype == DELREAD:
+            #未読
+            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '0' WHERE id = '"+sendkey+"'"
         elif qerytype == ALLCOUNT:
             sql = "SELECT count(*) as allcount FROM scrapingInfo2 WHERE delflg = '0'"
 
         print(sql)
 
         #クエリ発行
-        if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO:
+        if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO or qerytype == REGREAD or qerytype == DELREAD:
             print("update/del")
             cur.execute(sql)
             conn.commit()
