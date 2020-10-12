@@ -86,6 +86,39 @@ function scraping(sendkey) {
   });
 }
 
+//memo
+function memo(id, textmemo) {  
+  $(function(){
+    var targetUrl = tUrl+'memo';
+    console.log(id);
+    console.log(textmemo);
+    var request = {
+      'id': id,
+      'textmemo': textmemo
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+          var pastDate = null; 
+          other(all,pastDate);
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
 //TODAY
 function other(other,pastDate) {
 
@@ -363,7 +396,6 @@ function exportCSV(items, delimiter, filename) {
   }
 }
 
-
 function output(){
     console.log(savedata);
     if (savedata == null || savedata == 0) {
@@ -372,7 +404,6 @@ function output(){
       var filename = savedata[0].dt;;
       exportCSV(savedata,',', filename);
     }
-    
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 window.onload = function() {
@@ -424,6 +455,28 @@ $(function(){
       $('#iimg').empty();
       $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING NOW ( PLEASE WAIT A MINUTE )　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
     }  
+  });
+});
+
+//モーダルmemo
+$(function(){ 
+  $(document).on('click','.modalmemo',function() {
+    var id = $(this).attr('id');
+    console.log('モーダルメモ');
+    console.log(id);
+    $('#save').attr('memo-id', id);
+  });
+});
+
+//memo
+$(function(){ 
+  $('#save').on('click',function(){
+    var id = $("#save").attr('memo-id');
+    var textmemo = $("#textmemo").val();
+    console.log('モーダルメモ');
+    console.log(id);
+    console.log(textmemo);
+    memo(id, textmemo);
   });
 });
 
@@ -513,21 +566,34 @@ function show(data) {
     var dirDay = data[i].dt;
     var dirNaeme = dirDay.replace( /-/g , "" );
     dirNaeme = dirNaeme.substr(0,8);
-
+    
+    //No
     var no = i+1;
-
+    
+    //おきに入り
     var favorite = data[i].favorite;
     if (favorite == '0') {
       var favo = 1;
       var favoword = '未登録';
       var color = 'btn-primary'
-    }else if (favorite == '1') {
+    } else if (favorite == '1') {
       var favo = 0;
       var favoword = '登録済';
       var color = 'btn-danger';
     } 
-    //$('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td><td><button type="button" id="'+data[i].id+'" class="memo btn btn-success">memo</button></td></tr>');
-    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+data[i].detail+'</td><td>'+data[i].memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
+
+    //詳細
+    var detail = data[i].detail;
+    if (detail == null) {
+      detail = '詳細はありません'
+    }
+
+    //メモ
+    var memo = data[i].memo;
+    if (memo == null) {
+      memo = 'メモはありません'
+    }
+    $('#table').append('<tr><td>'+ no +'</td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td>'+data[i].img_id+'</td><td><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></td><td>'+detail+'</td><td>'+memo+'</td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">delete</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">memo</button></td></tr>');
     }  
   });
   return data;

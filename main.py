@@ -22,6 +22,7 @@ DELONE= 'delone'
 REGFAVO = 'regfavo'
 DELFAVO = 'delfavo'
 ALLCOUNT = 'allcount'
+MEMO = 'memo'
 
 
 #ファイルパス
@@ -143,6 +144,19 @@ def favorite():
 
     dbconn(qerytype, sendkey)
 
+#メモ
+@post('/memo')
+def memo():
+    #値取得
+    data = request.json
+    id = data['id']
+    print(id)
+    textmemo = data['textmemo']
+    print(textmemo)
+    qerytype = MEMO
+    dbconnmemo(qerytype, id ,textmemo)
+
+
 i = 0
 def isUrlCheck(url):
     if url == None:
@@ -221,6 +235,57 @@ def dbconn(qerytype, sendkey):
 
         #クエリ発行
         if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO:
+            print("update/del")
+            cur.execute(sql)
+            conn.commit()
+        else:
+            print("select")
+            cur.execute(sql)
+            cur.statement    
+            url = cur.fetchall()
+
+        if url is not None:
+            return url
+        else:
+            print('None')
+            return None
+    except:
+        print("DBエラーが発生しました")
+        return None
+    finally:
+        print('finally')
+        cur.close()
+        conn.close()
+
+def dbconnmemo(qerytype, id, textmemo):
+    print("q")
+    print(qerytype)
+    print(id)
+    print(textmemo)
+
+    f = open('./conf/prop.json', 'r')
+    info = json.load(f)
+    f.close()
+    #DB設定
+    
+    conn = mysql.connector.connect(
+            host = info['host'],
+            port = info['port'],
+            user = info['user'],
+            password = info['password'],
+            database = info['database'],
+    )
+    
+    cur = conn.cursor(dictionary=True)   
+    
+    try:    
+        #接続クエリ
+        if qerytype == MEMO:
+            sql = "UPDATE scraping.scrapinginfo2 SET memo = '"+textmemo+"' WHERE id = '"+id+"'"
+        print(sql)
+
+        #クエリ発行
+        if qerytype == MEMO:
             print("update/del")
             cur.execute(sql)
             conn.commit()

@@ -101,14 +101,14 @@ color: #222222;
     <div class="display-area">
       <div>
         <table class="table">
-          <thead>
+          <!--<thead>
             <tr>
               <th></th>
               <th></th>
               <th></th>
               <th></th>
             </tr>
-          </thead>
+          </thead>-->
           <tbody id="table">
           </tbody>
         </table>
@@ -144,11 +144,11 @@ color: #222222;
             <div class="modal-body">
                 <div class="form-group">
                   <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label><br>
-                  page : <p>
+                 <!-- page : <p>
                             <button class="btn btn-secondary shadow" onclick="countUp();">＋</button>
                                 <span id="pageCount" style="margin: 10px;">1</span>
                                 <button class="btn btn-secondary shadow" onclick="countDown();">−</button>
-                         </p>
+                         </p>-->
                   key word : <input type="text" class="form-control" id="key">
                 </div>
                 <div class="modal-footer">
@@ -170,16 +170,11 @@ color: #222222;
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                  <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label><br>
-                  <!--page : <p>
-                            <button class="btn btn-secondary shadow" onclick="countUp();">＋</button>
-                                <span id="pageCount" style="margin: 10px;">1</span>
-                                <button class="btn btn-secondary shadow" onclick="countDown();">−</button>
-                         </p>-->
-                  key word : <input type="text" class="form-control" id="key">
+                  <label for="textarea1-name" class="col-form-label"><b>MEMO</b></label><br>
+                  <textarea id="textmemo" class="form-control"></textarea>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" id="start" class="btn btn-primary" data-dismiss="modal">START</button>
+                  <button type="button" id="save" class="btn btn-primary" data-dismiss="modal">SAVE</button>
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
                 </div>
             </div>
