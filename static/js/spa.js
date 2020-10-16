@@ -5,6 +5,7 @@ var all = 'all';
 var key = 'key';
 var sflag = 0;
 var savedata;
+var request_kye = request_kye;
 
 //今日の日時
 function today() {
@@ -33,10 +34,7 @@ function allcount() {
              console.log(data[1]);
              console.log(data[3]);
              console.log(data);
-              //var pastDate = null; 
-              //other(all,pastDate);
             sflag = 0;
-            //getPastDay();
           }).fail(function(data, XMLHttpRequest, textStatus) {
             console.log(data);
             $('#table').empty();
@@ -53,7 +51,6 @@ function allcount() {
 function scraping(sendkey) {  
   $(function(){
     var targetUrl = tUrl+'scraping';
-
     console.log(sendkey);
     var request = {
       'sendkey': sendkey
@@ -69,44 +66,10 @@ function scraping(sendkey) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
-            var pastDate = null; 
-            other(all,pastDate);
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+          gettoday();
           sflag = 0;
-          getPastDay();
-        }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
-      });
-  });
-}
-
-//memo
-function memo(id, textmemo) {  
-  $(function(){
-    var targetUrl = tUrl+'memo';
-    console.log(id);
-    console.log(textmemo);
-    var request = {
-      'id': id,
-      'textmemo': textmemo
-    };
-      $.ajax({
-        url: targetUrl,
-        type: 'POST',
-        contentType: 'application/JSON',
-        //dataType: 'JSON',
-        data : JSON.stringify(request),
-        scriptCharset: 'utf-8',
-      }).done(function(data){ 
-          console.log(data);
-          var pastDate = null; 
-          other(all,pastDate);
+          gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -120,44 +83,51 @@ function memo(id, textmemo) {
 }
 
 //TODAY
-function other(other,pastDate) {
-
-  var targetUrl = tUrl+'other';
-  var date = null;
-
-  if (pastDate == null) {
-    date = today();  
-  } else {
-    date = pastDate;
-  }
-
-  if (date != null) {
-    if (other == key) {
-      var request = {
-          'date' : date,
-          'other': key
-      };
-    } else if(other == all){
-      var request = {
-        'date' : date,
-        'other': all
-        };
-    }
-  } else {
-    alert('不正な値');
+function gettoday() {  
+  date = today(); 
+  $(function(){
+    var targetUrl = tUrl+'gettoday';
     var request = {
-      'date' : today(),
-      'other': all
+      'date': date
     };
-  }
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+        if (data == null || data == '' || data[0] == '') {
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+        } else {
+          show(data);
+          savedata = data;
+        }
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
 
+//ALLDAY
+function getallday() {
   $(function() {
+    var targetUrl = tUrl+'getallday';
       $.ajax({
           url: targetUrl,
           type: 'POST',
           contentType: 'application/JSON',
           dataType: 'JSON',
-          data : JSON.stringify(request),
+          data : null,
           scriptCharset: 'utf-8',
       }).done(function(data) { 
           if (data == null || data == '' || data[0] == '') {
@@ -176,10 +146,10 @@ function other(other,pastDate) {
   });
 }
 
-//過去日
-function getPastDay() {  
+//キーワード
+function getkeyword() {  
   $(function(){
-    var targetUrl = tUrl+'getPastDay';    
+    var targetUrl = tUrl+'getkeyword';    
       $.ajax({
           url: targetUrl,
           type: 'POST',
@@ -207,10 +177,34 @@ function getPastDay() {
   });
 }
 
+//キーワード検索
+function skeyword(key) { 
+  var request = {
+    'sendkey': key
+  };
+  $(function(){
+    var targetUrl = tUrl+'skeyword';    
+      $.ajax({
+          url: targetUrl,
+          type: 'POST',
+          contentType: 'application/JSON',
+          dataType: 'JSON',
+          data : JSON.stringify(request),
+          scriptCharset: 'utf-8',
+      }).done(function(data) { 
+        show(data);
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
 //削除画面
 function delwords() {  
   $(function(){
-    var targetUrl = tUrl+'getPastDay';    
+    var targetUrl = tUrl+'getkeyword';    
       $.ajax({
           url: targetUrl,
           type: 'POST',
@@ -255,14 +249,9 @@ function godelwords(sendkey) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
             delwords();
-            //var pastDate = null; 
-            //other(all,pastDate);
           sflag = 0;
-          getPastDay();
+          getkeyword();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -292,14 +281,74 @@ function godelonewords(sendkey) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
+          sflag = 0;
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
           $('#table').empty();
           $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
-            //delwords();
-            var pastDate = null; 
-            other(all,pastDate);
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
           sflag = 0;
-          getPastDay();
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
+//MEMO
+function memo(id, textmemo) {  
+  $(function(){
+    var targetUrl = tUrl+'memo';
+    console.log(id);
+    console.log(textmemo);
+    var request = {
+      'id': id,
+      'textmemo': textmemo
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        //dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          console.log(data);
+
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          console.log(data);
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+          sflag = 0;
+          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+          console.log("textStatus     : " + textStatus);
+      });
+  });
+}
+
+//お気に入り検索
+function gosfavo() {  
+    var targetUrl = tUrl+'sfavo';
+    var request = {
+      'sendkey': null
+    };
+    $(function(){
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        dataType: 'JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+        if (data == null || data == '' || data[0] == '') {
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+        } else {
+          show(data);
+          savedata = data;
+        }
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -329,11 +378,7 @@ function gofavorite(sendkey, type) {
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-          console.log(data);
-            var pastDate = null; 
-            other(all,pastDate);
-          sflag = 0;
-          //getPastDay();
+
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -364,10 +409,6 @@ function goread(sendkey, type) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-            var pastDate = null; 
-            other(all,pastDate);
-          sflag = 0;
-          //getPastDay();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -379,6 +420,251 @@ function goread(sendkey, type) {
       });
   });
 }
+
+window.onload = function() {
+  //allcount();
+  getallday();
+  getkeyword();
+  $('#table').empty();
+  $('#iimg').empty();
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+}
+
+//総件数
+function allcouont() {
+  $(function(){
+    var countElm = $('.count'),
+    countSpeed = 5;
+  
+    countElm.each(function(){
+        var self = $(this),
+        countMax = self.attr('data-num'),
+        thisCount = self.text(),
+        countTimer;
+  
+        function timer(){
+            countTimer = setInterval(function(){
+                var countNext = thisCount++;
+                self.text(countNext);
+  
+                if(countNext == countMax){
+                    clearInterval(countTimer);
+                }
+            },countSpeed);
+        }
+        timer();
+    });
+  });
+}
+
+//scraping
+$(function(){ 
+  $('#start').on('click',function(){
+    if (sflag == 0) {
+      sflag = 1;
+      sendkey= $("#key").val();
+      scraping(sendkey);
+      $('#table').empty();
+      $('#iimg').empty();
+      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+    } else {
+      $('#table').empty();
+      $('#iimg').empty();
+      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING NOW ( PLEASE WAIT A MINUTE )　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+    }  
+  });
+});
+
+//ALLDAY
+$(function() {
+  $('#allday').on('click',function() {
+    getallday();
+    $('#table').empty();
+    $('#iimg').empty();
+    $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+  });
+});
+
+//TODAY
+$(function() {
+  $('#today').on('click',function() {
+      gettoday();
+      $('#table').empty();
+      $('#iimg').empty();
+      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');  
+  });
+});
+
+//プルダウン選択時
+$(function() {
+  $('#ddmenu').on('click',function() {
+    var key = $("#ddmenu").val();
+    skeyword(key);
+  });
+});
+
+//削除画面
+$(function() {
+  $('#del').on('click',function() {
+    delwords();
+  });
+});
+
+//モーダルmemo
+$(function(){ 
+  $(document).on('click','.modalmemo',function() {
+    var id = $(this).attr('id');
+    console.log('モーダルメモ');
+    console.log(id);
+    $('#save').attr('memo-id', id);
+  });
+});
+
+//memo
+$(function(){ 
+  $('#save').on('click',function(){
+    var id = $("#save").attr('memo-id');
+    var textmemo = $("#textmemo").val();
+    console.log('モーダルメモ');
+    console.log(id);
+    console.log(textmemo);
+    memo(id, textmemo);
+  });
+});
+
+//お気に入り
+$(function() {
+  $(document).on('click','.favorite',function() {
+    var id =  $(this).attr("id");
+    var sendkey = id.substr(1);
+    console.log('sendkey');
+    console.log(sendkey);
+    
+    var type = id.substr(0,1);
+    console.log('type');
+    console.log(type);
+
+    gofavorite(sendkey,type);
+  });
+});
+
+//お気に入り検索
+$(function() {
+  $('#sfavo').on('click',function() {
+    gosfavo();
+    console.log('sfavo');
+  });
+});
+
+//削除
+$(function() {
+  $(document).on('click','.godel',function() {
+    var sendkey =  $(this).attr("id");
+    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
+    console.log('sendkey');
+    console.log(sendkey);
+    if (ret == true) {
+      godelwords(sendkey);
+      console.log('send');
+    }
+  });
+});
+
+//1つ削除
+$(function() {
+  $(document).on('click','.one-del',function() {
+    var sendkey =  $(this).attr("id");
+    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
+    console.log('sendkey');
+    console.log(sendkey);
+    if (ret == true) {
+      godelonewords(sendkey);
+      console.log('send');
+    }
+  });
+});
+
+//既読
+$(function() {
+  $(document).on('click','.read',function() {
+    var id =  $(this).attr("id");
+    var sendkey = id.substr(1);
+    console.log('sendkey');
+    console.log(sendkey);
+    
+    var type = id.substr(0,1);
+    console.log('type');
+    console.log(type);
+
+    goread(sendkey,type);
+  });
+});
+
+//テーブル表示
+function show(data) {
+  $(function() {
+    //総件数
+    //allcouont();
+    console.log(data);
+    $('#table').empty();
+    $('#iimg').empty();
+    for (var i = 0; i < data.length; i++) {
+      
+    //var dirDay = data[i].dt;
+    //var dirNaeme = dirDay.replace( /-/g , "" );
+    //dirNaeme = dirNaeme.substr(0,8);
+    
+    //No
+    var no = i+1;
+    
+    //おきに入り
+    var favorite = data[i].favorite;
+    if (favorite == '0') {
+      var favo = 1;
+      var favoword = '未登録';
+      var color = 'btn-primary'
+    } else if (favorite == '1') {
+      var favo = 0;
+      var favoword = '登録済';
+      var color = 'btn-danger';
+    }
+
+    //既読
+    var readflg = data[i].readflg;
+    if (readflg == '0') {
+      var read = 1;
+      var readword = '未読';
+      var readcolor = 'btn-primary'
+      var readedcolor = '';
+    } else if (readflg == '1') {
+      var read = 0;
+      var readword = '既読';
+      var readcolor = 'btn-secondary';
+      var readedcolor = 'table-dark';
+    } 
+
+    //詳細
+    var detail = data[i].detail;
+    if (detail == null) {
+      detail = '詳細はありません'
+    }
+
+    //メモ
+    var memo = data[i].memo;
+    if (memo == null) {
+      memo = 'メモはありません'
+      var memocolor = '';
+    } else {
+      var memocolor = 'btn-warning';
+    }
+
+    $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+memo+'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
+    }  
+  });
+  return data;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //CSV download
 //jsonをcsv文字列に編集する
@@ -436,230 +722,3 @@ function output(){
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-window.onload = function() {
-  //today
-  allcount();
-  var pastDate = null; 
-  other(all,pastDate);
-  getPastDay();
-}
-
-//総件数
-function allcouont() {
-  $(function(){
-    var countElm = $('.count'),
-    countSpeed = 5;
-  
-    countElm.each(function(){
-        var self = $(this),
-        countMax = self.attr('data-num'),
-        thisCount = self.text(),
-        countTimer;
-  
-        function timer(){
-            countTimer = setInterval(function(){
-                var countNext = thisCount++;
-                self.text(countNext);
-  
-                if(countNext == countMax){
-                    clearInterval(countTimer);
-                }
-            },countSpeed);
-        }
-        timer();
-    });
-  });
-}
-//scraping
-$(function(){ 
-  $('#start').on('click',function(){
-    if (sflag == 0) {
-      sflag = 1;
-      sendkey= $("#key").val();
-      scraping(sendkey);
-      $('#table').empty();
-      $('#iimg').empty();
-      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
-    } else {
-      $('#table').empty();
-      $('#iimg').empty();
-      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING NOW ( PLEASE WAIT A MINUTE )　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
-    }  
-  });
-});
-
-//モーダルmemo
-$(function(){ 
-  $(document).on('click','.modalmemo',function() {
-    var id = $(this).attr('id');
-    console.log('モーダルメモ');
-    console.log(id);
-    $('#save').attr('memo-id', id);
-  });
-});
-
-//memo
-$(function(){ 
-  $('#save').on('click',function(){
-    var id = $("#save").attr('memo-id');
-    var textmemo = $("#textmemo").val();
-    console.log('モーダルメモ');
-    console.log(id);
-    console.log(textmemo);
-    memo(id, textmemo);
-  });
-});
-
-//TODAY
-$(function() {
-  $('.other').on('click',function() {
-    var id = $(this).attr('id');
-    var pastDate = null;
-    if (id == 'today') {
-      other(all,pastDate);
-    } else {
-      var pastDate = ''; 
-      other(all,pastDate);
-      getPastDay();
-    }
-  });
-});
-
-//プルダウン選択時
-$(function() {
-  $('#ddmenu').on('click',function() {
-    var pastDate = $("#ddmenu").val();
-    other(key,pastDate);
-  });
-});
-
-//削除画面
-$(function() {
-  $('#del').on('click',function() {
-    delwords();
-  });
-});
-
-//削除
-$(function() {
-  $(document).on('click','.godel',function() {
-    var sendkey =  $(this).attr("id");
-    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
-    console.log('sendkey');
-    console.log(sendkey);
-    if (ret == true) {
-      godelwords(sendkey);
-      console.log('send');
-    }
-  });
-});
-
-//1つ削除
-$(function() {
-  $(document).on('click','.one-del',function() {
-    var sendkey =  $(this).attr("id");
-    ret = window.confirm("データは完全に削除されます。本当によろしいですか？");
-    console.log('sendkey');
-    console.log(sendkey);
-    if (ret == true) {
-      godelonewords(sendkey);
-      console.log('send');
-    }
-  });
-});
-
-//お気に入り
-$(function() {
-  $(document).on('click','.favorite',function() {
-    var id =  $(this).attr("id");
-    var sendkey = id.substr(1);
-    console.log('sendkey');
-    console.log(sendkey);
-    
-    var type = id.substr(0,1);
-    console.log('type');
-    console.log(type);
-
-    gofavorite(sendkey,type);
-  });
-});
-
-//既読
-$(function() {
-  $(document).on('click','.read',function() {
-    var id =  $(this).attr("id");
-    var sendkey = id.substr(1);
-    console.log('sendkey');
-    console.log(sendkey);
-    
-    var type = id.substr(0,1);
-    console.log('type');
-    console.log(type);
-
-    goread(sendkey,type);
-  });
-});
-
-
-//テーブル表示
-function show(data) {
-  $(function() {
-    //総件数
-    allcouont();
-    $('#table').empty();
-    $('#iimg').empty();
-    for (var i = 0; i < data.length; i++) {
-      
-    var dirDay = data[i].dt;
-    var dirNaeme = dirDay.replace( /-/g , "" );
-    dirNaeme = dirNaeme.substr(0,8);
-    
-    //No
-    var no = i+1;
-    
-    //おきに入り
-    var favorite = data[i].favorite;
-    if (favorite == '0') {
-      var favo = 1;
-      var favoword = '未登録';
-      var color = 'btn-primary'
-    } else if (favorite == '1') {
-      var favo = 0;
-      var favoword = '登録済';
-      var color = 'btn-danger';
-    }
-
-    //既読
-    var readflg = data[i].readflg;
-    if (readflg == '0') {
-      var read = 1;
-      var readword = '未読';
-      var readcolor = 'btn-primary'
-      var readedcolor = '';
-    } else if (readflg == '1') {
-      var read = 0;
-      var readword = '既読';
-      var readcolor = 'btn-secondary';
-      var readedcolor = 'table-dark';
-    } 
-
-    //詳細
-    var detail = data[i].detail;
-    if (detail == null) {
-      detail = '詳細はありません'
-    }
-
-    //メモ
-    var memo = data[i].memo;
-    if (memo == null) {
-      memo = 'メモはありません'
-      var memocolor = '';
-    } else {
-      var memocolor = 'btn-warning';
-    }
-
-    $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+memo+'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
-    }  
-  });
-  return data;
-}

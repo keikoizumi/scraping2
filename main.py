@@ -14,8 +14,10 @@ import os
 
 
 #status
-PASTDAY = 'pastday'
-ALL = 'all'
+GETKEYWORD = 'getkeyword'
+SKEYWORD = 'skeyword'
+TODAY = 'today'
+ALLDAY = 'allday'
 KEY = 'key'
 DEL = 'del'
 DELONE= 'delone'
@@ -25,7 +27,7 @@ REGREAD = 'regread'
 DELREAD = 'delread'
 ALLCOUNT = 'allcount'
 MEMO = 'memo'
-
+SFAVO = 'SFAVO'
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +48,14 @@ def send_static_img(filename):
 def index():
     return template('top')
 
+#スクレイピング
+@post('/scraping')
+def startscraping():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    scraping(sendkey)
+
 #総件数
 @post('/allcount')
 def startscraping():
@@ -60,13 +70,13 @@ def startscraping():
         jsonUrl = makeJson(url)
         print(type(jsonUrl))
         return jsonUrl
-
-@post('/other')
-def postOther():
+#TODAY
+@post('/gettoday')
+def gettoday():
     #値取得
     data = request.json
     date = data['date']
-    qerytype = data['other']
+    qerytype = TODAY
 
     url = dbconn(qerytype, date)
     #ID NULLチェック
@@ -77,12 +87,29 @@ def postOther():
         print(type(jsonUrl))
         return jsonUrl
     else:
-        return postOther()
+        return gettoday()
+#ALLDAY
+@post('/getallday')
+def getallday():
+    #値取得
+    data = None
+    qerytype = ALLDAY
 
-@post('/getPastDay')
-def pastDay():
+    url = dbconn(qerytype, data)
+    #ID NULLチェック
+    if isUrlCheck(url):
+        print('checkedUrl:')
+        #json作成
+        jsonUrl = makeJson(url)
+        print(type(jsonUrl))
+        return jsonUrl
+    else:
+        return getallday()
+#キーワード一覧
+@post('/getkeyword')
+def getkeyword():
     date = None
-    qerytype = PASTDAY
+    qerytype = GETKEYWORD
     url = dbconn(qerytype, date)
     #ID NULLチェック
     if isUrlCheck(url):
@@ -92,16 +119,25 @@ def pastDay():
         print(type(jsonUrl))
         return jsonUrl
     else:   
-        return postOther()
+        return getkeyword()
 
-#スクレイピング
-@post('/scraping')
-def startscraping():
-    #値取得
+#キーワード一覧
+@post('/skeyword')
+def skeyword():
     data = request.json
     sendkey = data['sendkey']
-
-    scraping(sendkey)
+    print(sendkey)
+    qerytype = SKEYWORD
+    url = dbconn(qerytype, sendkey)
+    #ID NULLチェック
+    if isUrlCheck(url):
+        print('checkedUrl:')
+        #json作成
+        jsonUrl = makeJson(url)
+        print(type(jsonUrl))
+        return jsonUrl
+    else:   
+        return skeyword()      
     
 #キーワード削除
 @post('/del')
@@ -113,7 +149,7 @@ def delete():
     
     qerytype = DEL
     dbconn(qerytype, sendkey)
-    pastDay()
+    getkeyword()
 
 #1つ削除
 @post('/delone')
@@ -126,7 +162,29 @@ def delone():
     
     qerytype = DELONE
     dbconn(qerytype, sendkey)
-    pastDay()
+    getkeyword()
+
+#1お気に入り検索
+@post('/sfavo')
+def sfavo():
+    #値取得
+    data = request.json
+    sendkey = data['sendkey']
+    print(sendkey)
+    print('/sfavo')
+    
+    qerytype = SFAVO
+
+    url = dbconn(qerytype, sendkey)
+
+    if isUrlCheck(url):
+        print('checkedUrl:')
+        #json作成
+        jsonUrl = makeJson(url)
+        print(type(jsonUrl))
+        return jsonUrl
+    else:
+        return sfavo()
 
 #お気に入り
 @post('/favorite')
@@ -175,7 +233,6 @@ def memo():
     print(textmemo)
     qerytype = MEMO
     dbconnmemo(qerytype, id ,textmemo)
-
 
 i = 0
 def isUrlCheck(url):
@@ -230,12 +287,18 @@ def dbconn(qerytype, sendkey):
     
     try:    
         #接続クエリ
-        if qerytype == ALL:
+        if qerytype == ALLDAY:
+            #
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
+        elif qerytype == TODAY:
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
-        elif qerytype == KEY:
+        elif qerytype == SKEYWORD:
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
-        elif qerytype == PASTDAY:
-            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
+        elif qerytype == GETKEYWORD:
+            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' AND favorite = '1' ORDER BY dt DESC"
+        elif qerytype == SFAVO:
+            #お気に入り検索
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' AND favorite = '1'"
         elif qerytype == DEL:
             #キーワード削除
             sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"
