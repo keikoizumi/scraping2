@@ -70,15 +70,17 @@ def startscraping():
         jsonUrl = makeJson(url)
         print(type(jsonUrl))
         return jsonUrl
+
 #TODAY
 @post('/gettoday')
 def gettoday():
     #値取得
-    data = request.json
-    date = data['date']
+    cond = request.json
+    #condition = condition['date']
     qerytype = TODAY
+    #print(cond['condition'])
 
-    url = dbconn(qerytype, date)
+    url = dbconn(qerytype, cond)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
@@ -88,14 +90,15 @@ def gettoday():
         return jsonUrl
     else:
         return gettoday()
+
 #ALLDAY
 @post('/getallday')
 def getallday():
     #値取得
-    data = None
+    cond = None
     qerytype = ALLDAY
 
-    url = dbconn(qerytype, data)
+    url = dbconn(qerytype, cond)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
@@ -105,12 +108,13 @@ def getallday():
         return jsonUrl
     else:
         return getallday()
+
 #キーワード一覧
 @post('/getkeyword')
 def getkeyword():
-    date = None
+    cond = None
     qerytype = GETKEYWORD
-    url = dbconn(qerytype, date)
+    url = dbconn(qerytype, cond)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
@@ -121,14 +125,12 @@ def getkeyword():
     else:   
         return getkeyword()
 
-#キーワード一覧
+#キーワード検索
 @post('/skeyword')
 def skeyword():
-    data = request.json
-    sendkey = data['sendkey']
-    print(sendkey)
+    cond = request.json
     qerytype = SKEYWORD
-    url = dbconn(qerytype, sendkey)
+    url = dbconn(qerytype, cond)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
@@ -164,18 +166,15 @@ def delone():
     dbconn(qerytype, sendkey)
     getkeyword()
 
-#1お気に入り検索
+#お気に入り検索
 @post('/sfavo')
 def sfavo():
     #値取得
-    data = request.json
-    sendkey = data['sendkey']
-    print(sendkey)
+    cond = request.json
     print('/sfavo')
-    
     qerytype = SFAVO
 
-    url = dbconn(qerytype, sendkey)
+    url = dbconn(qerytype, cond)
 
     if isUrlCheck(url):
         print('checkedUrl:')
@@ -265,10 +264,10 @@ def isTypeCheck(jsonUrl):
         jsonDumps(jsonUrl)
     
 
-def dbconn(qerytype, sendkey):
+def dbconn(qerytype, cond):
     print("q")
     print(qerytype)
-    print(sendkey)
+    print(cond)
 
     f = open('./conf/prop.json', 'r')
     info = json.load(f)
@@ -285,20 +284,38 @@ def dbconn(qerytype, sendkey):
     
     cur = conn.cursor(dictionary=True)   
     
+    #condition
+    condition = ''
+    if cond is not None:
+        print("is condition")
+        kye_today = cond['condition']['date']
+        kye_skeyword = cond['condition']['kye_skeyword']
+        kye_sfavo = cond['condition']['kye_sfavo']
+
+        if kye_today is not None:
+            condition = "AND dt = '" + kye_today + "'"
+        if kye_skeyword is not None:
+            condition = condition + "AND img_id = '" + kye_skeyword + "'"
+        if kye_sfavo is not None:
+            condition = condition + "AND favorite = '" + str(kye_sfavo) + "'"
+
     try:    
         #接続クエリ
         if qerytype == ALLDAY:
-            #
+            #ALLDAY
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == TODAY:
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' AND dt LIKE '"+sendkey+'%'"' ORDER BY dt DESC"
+            #TODAT
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' " + condition + " ORDER BY dt DESC"
         elif qerytype == SKEYWORD:
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' AND img_id LIKE '"+sendkey+"'ORDER BY dt DESC  LIMIT 500"
+            #キーワード検索
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' "+ condition +" ORDER BY dt DESC"
         elif qerytype == GETKEYWORD:
+            #キーワード一覧取得
             sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' AND favorite = '1' ORDER BY dt DESC"
         elif qerytype == SFAVO:
             #お気に入り検索
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' AND favorite = '1'"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' "+ condition
         elif qerytype == DEL:
             #キーワード削除
             sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"

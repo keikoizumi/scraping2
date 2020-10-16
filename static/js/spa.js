@@ -5,7 +5,42 @@ var all = 'all';
 var key = 'key';
 var sflag = 0;
 var savedata;
-var request_kye = request_kye;
+
+//key session
+var kye_today;
+var kye_skeyword;
+var kye_sfavo;
+
+//condition
+var condition = {};
+
+//make condition
+function make_condition() {
+  if (kye_today !== null) {
+    condition.date = today();
+  }
+  else 
+  {
+    condition.date = null;
+  }
+  if (kye_skeyword !== null) {
+    condition.kye_skeyword = kye_skeyword;
+  }
+  else 
+  {
+    condition.kye_skeyword = null;
+  }
+  if (kye_sfavo === 1) {
+    condition.kye_sfavo = kye_sfavo;
+  }
+  else
+  {
+    condition.kye_sfavo = null;
+  }   
+  console.log(condition);
+  return condition;
+}
+
 
 //今日の日時
 function today() {
@@ -59,7 +94,6 @@ function scraping(sendkey) {
         url: targetUrl,
         type: 'POST',
         contentType: 'application/JSON',
-        //dataType: 'JSON',
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
@@ -84,21 +118,20 @@ function scraping(sendkey) {
 
 //TODAY
 function gettoday() {  
-  date = today(); 
+  //date = today();
   $(function(){
     var targetUrl = tUrl+'gettoday';
     var request = {
-      'date': date
+      'condition': make_condition()
     };
       $.ajax({
         url: targetUrl,
         type: 'POST',
         contentType: 'application/JSON',
-        //dataType: 'JSON',
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-        if (data == null || data == '' || data[0] == '') {
+        if (data === null || data == "[]" || data[0] == '') {
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
@@ -147,7 +180,7 @@ function getallday() {
 }
 
 //キーワード
-function getkeyword() {  
+function getkeyword() { 
   $(function(){
     var targetUrl = tUrl+'getkeyword';    
       $.ajax({
@@ -180,7 +213,7 @@ function getkeyword() {
 //キーワード検索
 function skeyword(key) { 
   var request = {
-    'sendkey': key
+    'condition': make_condition()
   };
   $(function(){
     var targetUrl = tUrl+'skeyword';    
@@ -249,7 +282,7 @@ function godelwords(sendkey) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-            delwords();
+          delwords();
           sflag = 0;
           getkeyword();
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -330,7 +363,7 @@ function memo(id, textmemo) {
 function gosfavo() {  
     var targetUrl = tUrl+'sfavo';
     var request = {
-      'sendkey': null
+      'condition': make_condition()
     };
     $(function(){
       $.ajax({
@@ -423,8 +456,13 @@ function goread(sendkey, type) {
 
 window.onload = function() {
   //allcount();
+  kye_today = null;
+  kye_skeyword = null;
+  kye_sfavo = null;
+
   getallday();
   getkeyword();
+
   $('#table').empty();
   $('#iimg').empty();
   $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
@@ -478,7 +516,13 @@ $(function(){
 //ALLDAY
 $(function() {
   $('#allday').on('click',function() {
+    
+    kye_today = null;
+    kye_skeyword = null;
+    kye_sfavo = null;
+
     getallday();
+
     $('#table').empty();
     $('#iimg').empty();
     $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
@@ -488,6 +532,7 @@ $(function() {
 //TODAY
 $(function() {
   $('#today').on('click',function() {
+      kye_today = today();
       gettoday();
       $('#table').empty();
       $('#iimg').empty();
@@ -499,6 +544,7 @@ $(function() {
 $(function() {
   $('#ddmenu').on('click',function() {
     var key = $("#ddmenu").val();
+    kye_skeyword = key;
     skeyword(key);
   });
 });
@@ -537,13 +583,7 @@ $(function() {
   $(document).on('click','.favorite',function() {
     var id =  $(this).attr("id");
     var sendkey = id.substr(1);
-    console.log('sendkey');
-    console.log(sendkey);
-    
     var type = id.substr(0,1);
-    console.log('type');
-    console.log(type);
-
     gofavorite(sendkey,type);
   });
 });
@@ -551,6 +591,7 @@ $(function() {
 //お気に入り検索
 $(function() {
   $('#sfavo').on('click',function() {
+    kye_sfavo = 1;
     gosfavo();
     console.log('sfavo');
   });
