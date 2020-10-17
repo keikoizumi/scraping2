@@ -286,54 +286,59 @@ def dbconn(qerytype, cond):
     
     #condition
     condition = ''
-    if cond is not None:
-        print("is condition")
-        kye_today = cond['condition']['date']
-        kye_skeyword = cond['condition']['kye_skeyword']
-        kye_sfavo = cond['condition']['kye_sfavo']
+    if qerytype == ALLDAY or qerytype == TODAY or qerytype == SKEYWORD or qerytype == GETKEYWORD or qerytype == SFAVO: 
+        if cond is not None:
+            print("is condition")
+            kye_today = cond['condition']['date']
+            kye_skeyword = cond['condition']['kye_skeyword']
+            kye_sfavo = cond['condition']['kye_sfavo']
 
-        if kye_today is not None:
-            condition = "AND dt = '" + kye_today + "'"
-        if kye_skeyword is not None:
-            condition = condition + "AND img_id = '" + kye_skeyword + "'"
-        if kye_sfavo is not None:
-            condition = condition + "AND favorite = '" + str(kye_sfavo) + "'"
-
+            if kye_today is not None:
+                condition = "AND dt LIKE '%" + kye_today + "%'"
+            if kye_skeyword is not None:
+                condition = condition + " AND img_id = '" + kye_skeyword + "'"
+            if kye_sfavo is not None:
+                condition = condition + " AND favorite = '" + str(kye_sfavo) + "'"
+    else:
+        condition = cond
+    
+    print(condition)
+    
     try:    
         #接続クエリ
         if qerytype == ALLDAY:
             #ALLDAY
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
-        elif qerytype == TODAY:
+        #elif qerytype == TODAY:
             #TODAT
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' " + condition + " ORDER BY dt DESC"
-        elif qerytype == SKEYWORD:
+            #sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' " + condition + "ORDER BY dt DESC"
+        elif qerytype == TODAY or qerytype == SKEYWORD:
             #キーワード検索
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' "+ condition +" ORDER BY dt DESC"
         elif qerytype == GETKEYWORD:
             #キーワード一覧取得
-            sql = "SELECT DISTINCT img_id as dt FROM scrapingInfo2 WHERE delflg = '0' AND favorite = '1' ORDER BY dt DESC"
+            sql = "SELECT DISTINCT img_id as keyword FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
         elif qerytype == SFAVO:
             #お気に入り検索
             sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' "+ condition
         elif qerytype == DEL:
             #キーワード削除
-            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE img_id = '"+condition+"'"
         elif qerytype == DELONE:
             #1つ削除
-            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET delflg = '1' WHERE id = '"+condition+"'"
         elif qerytype == REGFAVO:
             #お気に入り登録
-            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '1' WHERE id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '1' WHERE id = '"+condition+"'"
         elif qerytype == DELFAVO:
             #お気に入り解除
-            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET favorite = '0' WHERE id = '"+condition+"'"
         elif qerytype == REGREAD:
             #既読
-            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '1' WHERE id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '1' WHERE id = '"+condition+"'"
         elif qerytype == DELREAD:
             #未読
-            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '0' WHERE id = '"+sendkey+"'"
+            sql = "UPDATE scraping.scrapinginfo2 SET readflg = '0' WHERE id = '"+condition+"'"
         elif qerytype == ALLCOUNT:
             sql = "SELECT count(*) as allcount FROM scrapingInfo2 WHERE delflg = '0'"
 

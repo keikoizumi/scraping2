@@ -117,16 +117,16 @@ function scraping(sendkey) {
 }
 
 //TODAY
-function gettoday() {  
-  //date = today();
+function gettoday() {
+  var request = {
+    'condition': make_condition()
+  };  
   $(function(){
     var targetUrl = tUrl+'gettoday';
-    var request = {
-      'condition': make_condition()
-    };
       $.ajax({
         url: targetUrl,
         type: 'POST',
+        dataType: 'JSON',
         contentType: 'application/JSON',
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
@@ -137,10 +137,10 @@ function gettoday() {
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
         } else {
           show(data);
-          savedata = data;
+          console.log(data);
         }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
+          //console.log(data);
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
@@ -191,15 +191,16 @@ function getkeyword() {
           data : null,
           scriptCharset: 'utf-8',
       }).done(function(data) { 
+        console.log(data);
           if (data == null || data == '' || data[0] == '') {
             $('#table').empty();
             $('#iimg').empty();
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
           } else {
             $('#ddmenu').empty(); 
-            $("#ddmenu").append('<option value="">KEY WORDS</option>');
+            $("#ddmenu").append('<option value="nulll">KEY WORDS</option>');
             for (var i = 0; i < data.length; i++) {
-              $("#ddmenu").append('<option value="'+data[i].dt+'"style="font-weight: 600;" >'+data[i].dt+'</option>');
+              $("#ddmenu").append('<option value="'+data[i].keyword+'"style="font-weight: 600;" >'+data[i].keyword+'</option>');
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -211,7 +212,7 @@ function getkeyword() {
 }
 
 //キーワード検索
-function skeyword(key) { 
+function skeyword() { 
   var request = {
     'condition': make_condition()
   };
@@ -253,8 +254,7 @@ function delwords() {
           } else {
             $('#table').empty(); 
             for (var i = 0; i < data.length; i++) {
-              //console.log(data);
-              $('#table').append('<tr><td>'+data[i].dt+'</td><td><button type="button" id="'+data[i].dt+'" class="godel btn-danger" class="btn btn-primary">DELETE</button></td></tr>');
+              $('#table').append('<tr><td>'+data[i].keyword+'</td><td><button type="button" id="'+data[i].keyword+'" class="godel btn-danger" class="btn btn-primary">DELETE</button></td></tr>');
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
@@ -309,18 +309,17 @@ function godelonewords(sendkey) {
         url: targetUrl,
         type: 'POST',
         contentType: 'application/JSON',
-        //dataType: 'JSON',
+        dataType: 'JSON',
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-          sflag = 0;
+          getkeyword();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
       });
@@ -346,13 +345,12 @@ function memo(id, textmemo) {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
           console.log(data);
-
+          gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
       });
@@ -411,7 +409,8 @@ function gofavorite(sendkey, type) {
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-
+        console.log(data);
+        gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
@@ -441,13 +440,12 @@ function goread(sendkey, type) {
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-          console.log(data);
+        gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
           console.log("textStatus     : " + textStatus);
       });
@@ -545,7 +543,7 @@ $(function() {
   $('#ddmenu').on('click',function() {
     var key = $("#ddmenu").val();
     kye_skeyword = key;
-    skeyword(key);
+    skeyword();
   });
 });
 
@@ -646,7 +644,7 @@ function show(data) {
   $(function() {
     //総件数
     //allcouont();
-    console.log(data);
+    //console.log(data);
     $('#table').empty();
     $('#iimg').empty();
     for (var i = 0; i < data.length; i++) {
