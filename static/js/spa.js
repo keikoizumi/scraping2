@@ -131,7 +131,7 @@ function gettoday() {
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-        if (data === null || data == "[]" || data[0] == '') {
+        if (data === null || data == "[]" || data == '') {
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
@@ -140,7 +140,6 @@ function gettoday() {
           console.log(data);
         }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          //console.log(data);
           $('#table').empty();
           $('#iimg').empty();
           $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
@@ -198,7 +197,7 @@ function getkeyword() {
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
           } else {
             $('#ddmenu').empty(); 
-            $("#ddmenu").append('<option value="null">KEY WORDS</option>');
+            $("#ddmenu").append('<option value="all">ALL KEY WORDS</option>');
             for (var i = 0; i < data.length; i++) {
               $("#ddmenu").append('<option value="'+data[i].keyword+'"style="font-weight: 600;" >'+data[i].keyword+'</option>');
             }
@@ -225,8 +224,15 @@ function skeyword() {
           dataType: 'JSON',
           data : JSON.stringify(request),
           scriptCharset: 'utf-8',
-      }).done(function(data) { 
-        show(data);
+      }).done(function(data) {
+        if (data == null || data == '' || data[0] == '') {
+          $('#table').empty();
+          $('#iimg').empty();
+          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+        } else {
+          show(data);
+          savedata = data;
+        }
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           console.log("XMLHttpRequest : " + XMLHttpRequest.status);
@@ -283,7 +289,6 @@ function godelwords(sendkey) {
       }).done(function(data){ 
           console.log(data);
           delwords();
-          sflag = 0;
           getkeyword();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
@@ -309,12 +314,12 @@ function godelonewords(sendkey) {
         url: targetUrl,
         type: 'POST',
         contentType: 'application/JSON',
-        dataType: 'JSON',
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-          console.log(data);
           getkeyword();
+          gettoday();
+          savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           console.log(data);
           $('#table').empty();
