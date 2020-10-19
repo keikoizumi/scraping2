@@ -14,6 +14,9 @@ var kye_sfavo;
 //condition
 var condition = {};
 
+//Data Table
+var table = null;
+
 //make condition
 function make_condition() {
   if (kye_today !== null) {
@@ -709,11 +712,19 @@ function show(data) {
     }  
   });
 
-  //Data Table
-  $(function($){
+    if (table) {
+        // 二回目以降の描画の場合、初期化が必要
+        table.clear();
+        table.destroy();
+        $("#data-table tbody").empty();
+    }
+
+  table = $(function($){
     $("#data-table").DataTable({
+      destroy: true, 
+      "aaData": data.data, 
       lengthMenu: [ 10, 20, 30, 40, 50, 100, 200, 300, 500 ],
-      displayLength: 50,
+      displayLength: 20,
       columnDefs: [
         { targets: 1, width: 50 },
         { targets: 2, width: 50 },
