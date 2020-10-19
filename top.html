@@ -49,6 +49,7 @@
               <button type="button" class="btn btn-success btn-lg shadow" data-toggle="modal" data-target="#exampleModal" style="font-weight: 600;">SCRAPING</button>
             </div>
           </div>
+          <!--
           <div class="d-inline-block">
             <div class="m-2">
               <div id="allday">
@@ -63,6 +64,18 @@
               </div>
             </div>
           </div>
+          -->
+          <div class="d-inline-block">
+            <div class="m-2">
+              <div class="dropdown">
+                <select id="dateddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                  DATE
+                  <option value="all" style="font-weight: 600;" >ALL DAY</option>
+                  <option value="today"style="font-weight: 600;" >TODAY</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <div class="d-inline-block">
             <div class="m-2">
               <div class="dropdown">
@@ -74,13 +87,27 @@
           </div>
           <div class="d-inline-block">
             <div class="m-2">
+              <div class="dropdown">
+                <select id="favoddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                  FAVORITE
+                  <option value="all">ALL FAVORITE</option>
+                  <option value="1"style="font-weight: 600;" >ONLY FAVORITE</option>
+                  <option value="0"style="font-weight: 600;" >NOT FAVORITE</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!--
+          <div class="d-inline-block">
+            <div class="m-2">
                 <button type="button" id="sfavo" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">FAVORITE</button>
             </div>
           </div>
+          -->
           <div class="d-inline-block">
             <div class="m-2">
               <div class="csv">
-                <a href="#" class="btn btn-secondary btn-lg shadow text-white"  role="button" onclick="output();return false;">CSV DOWNLOAD</a>
+                <a href="#" class="btn btn-primary btn-lg shadow text-white"  role="button" onclick="output();return false;">CSV DOWNLOAD</a>
               </div>
             </div>
           </div>
@@ -102,11 +129,12 @@
   </nav>
 
   <!-- データ配置 -->
+  
   <div class="m-2">
     <!--<span class="count">0</span><b>件</b>-->
     <div class="display-area">
       <div>
-        <table id="data-table" class="table table-hover">
+        <table id="data-table" class="table table-hover table-responsive">
           <thead>
             <tr>
               <th>#⃣</th>

@@ -7,7 +7,7 @@ var sflag = 0;
 var savedata;
 
 //key session
-var kye_today;
+var kye_date;
 var kye_skeyword;
 var kye_sfavo;
 
@@ -19,13 +19,15 @@ var table = null;
 
 //make condition
 function make_condition() {
-  if (kye_today !== null) {
-    condition.date = today();
+  //DATE
+  if (kye_date !== null) {
+      condition.date = today();
   }
   else 
   {
     condition.date = null;
   }
+  //KEYWORD
   if (kye_skeyword !== null) {
     condition.kye_skeyword = kye_skeyword;
   }
@@ -33,7 +35,8 @@ function make_condition() {
   {
     condition.kye_skeyword = null;
   }
-  if (kye_sfavo === 1) {
+  //FAVORITE
+  if (kye_sfavo !== null) {
     condition.kye_sfavo = kye_sfavo;
   }
   else
@@ -44,6 +47,33 @@ function make_condition() {
   return condition;
 }
 
+//DISP RUNNUNG
+function disprunning(){
+  $('#table').empty();
+  $('#iimg').empty();
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>'); 
+}
+//DISP FAILURE
+function dispfailure(data, XMLHttpRequest, textStatus){
+  $('#table').empty();
+  $('#iimg').empty();
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
+  console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+  console.log("textStatus     : " + textStatus);
+  console.log(data);
+}
+//DISP FINISH
+function dispfinish(){
+  $('#table').empty();
+  $('#iimg').empty();
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+}
+//DISP NO DATA
+function dispnodata(){
+  $('#table').empty();
+  $('#iimg').empty();
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+}
 
 //今日の日時
 function today() {
@@ -52,7 +82,7 @@ function today() {
   return formatted;
 }
 
-//総件数
+/* //総件数
 function allcount() {
     $(function(){
       var targetUrl = tUrl+'allcount';
@@ -65,31 +95,23 @@ function allcount() {
             console.log(data);
             //$('.count').empty();
              $('.count').attr('data-num', 100);
-             console.log(data[0].allcount);
-             console.log(data[1].allcount);
-             console.log(data.allcount);
-             console.log(data[0]);
-             console.log(data[1]);
-             console.log(data[3]);
              console.log(data);
-            sflag = 0;
           }).fail(function(data, XMLHttpRequest, textStatus) {
             console.log(data);
             $('#table').empty();
             $('#iimg').empty();
             $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-            sflag = 0;
             console.log("XMLHttpRequest : " + XMLHttpRequest.status);
             console.log("textStatus     : " + textStatus);
         });
     });
-}
+} */
 
 //スクレイピング
 function scraping(sendkey) {  
   $(function(){
     var targetUrl = tUrl+'scraping';
-    console.log(sendkey);
+    //console.log(sendkey);
     var request = {
       'sendkey': sendkey
     };
@@ -100,21 +122,13 @@ function scraping(sendkey) {
         data : JSON.stringify(request),
         scriptCharset: 'utf-8',
       }).done(function(data){ 
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FINISH</div></td></tr>');
+          //console.log(data);
           gettoday();
           sflag = 0;
           gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
           sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -135,25 +149,18 @@ function gettoday() {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
         if (data === null || data == "[]" || data == '') {
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+          dispnodata();
         } else {
           show(data);
-          console.log(data);
+          //console.log(data);
         }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
 
-//ALLDAY
+/* //ALLDAY
 function getallday() {
   $(function() {
     var targetUrl = tUrl+'getallday';
@@ -179,7 +186,7 @@ function getallday() {
           console.log("textStatus     : " + textStatus);
       });
   });
-}
+} */
 
 //キーワード
 function getkeyword() { 
@@ -195,9 +202,7 @@ function getkeyword() {
       }).done(function(data) { 
         console.log(data);
           if (data == null || data == '' || data[0] == '') {
-            $('#table').empty();
-            $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+            dispnodata();
           } else {
             $('#ddmenu').empty(); 
             $("#ddmenu").append('<option value="all">ALL KEY WORDS</option>');
@@ -206,9 +211,7 @@ function getkeyword() {
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -229,17 +232,13 @@ function skeyword() {
           scriptCharset: 'utf-8',
       }).done(function(data) {
         if (data == null || data == '' || data[0] == '') {
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+          dispnodata();
         } else {
           show(data);
           savedata = data;
         }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -257,9 +256,7 @@ function delwords() {
           scriptCharset: 'utf-8',
       }).done(function(data) { 
           if (data == null || data == '' || data[0] == '') {
-            $('#table').empty();
-            $('#iimg').empty();
-            $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+            dispnodata();
           } else {
             $('#table').empty(); 
             for (var i = 0; i < data.length; i++) {
@@ -267,9 +264,7 @@ function delwords() {
             }
           }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -294,13 +289,7 @@ function godelwords(sendkey) {
           delwords();
           getkeyword();
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -324,12 +313,7 @@ function godelonewords(sendkey) {
           gettoday();
           savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -355,12 +339,7 @@ function memo(id, textmemo) {
           console.log(data);
           gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -381,21 +360,13 @@ function gosfavo() {
         scriptCharset: 'utf-8',
       }).done(function(data){ 
         if (data == null || data == '' || data[0] == '') {
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">NO DATA</div></td></tr>');
+          dispnodata();
         } else {
           show(data);
           savedata = data;
         }
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -420,13 +391,7 @@ function gofavorite(sendkey, type) {
         console.log(data);
         gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          sflag = 0;
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+          dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
@@ -450,31 +415,24 @@ function goread(sendkey, type) {
       }).done(function(data){ 
         gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
-          console.log(data);
-          $('#table').empty();
-          $('#iimg').empty();
-          $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</div></td><td><div style="font-style: italic;color: #FF3300;font-size:xx-large ;font-weight: 700;">FAILURE</div></td></tr>');
-          console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-          console.log("textStatus     : " + textStatus);
+           dispfailure(data, XMLHttpRequest, textStatus);
       });
   });
 }
 
 window.onload = function() {
   //allcount();
-  kye_today = null;
+  kye_date = null;
   kye_skeyword = null;
   kye_sfavo = null;
 
-  getallday();
+  //getallday();
   getkeyword();
-
-  $('#table').empty();
-  $('#iimg').empty();
-  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+  gettoday();
+  disprunning();
 }
 
-//総件数
+/* //総件数
 function allcouont() {
   $(function(){
     var countElm = $('.count'),
@@ -499,7 +457,7 @@ function allcouont() {
         timer();
     });
   });
-}
+} */
 
 //scraping
 $(function(){ 
@@ -508,9 +466,7 @@ $(function(){
       sflag = 1;
       sendkey= $("#key").val();
       scraping(sendkey);
-      $('#table').empty();
-      $('#iimg').empty();
-      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+      disprunning()
     } else {
       $('#table').empty();
       $('#iimg').empty();
@@ -520,38 +476,69 @@ $(function(){
 });
 
 //ALLDAY
-$(function() {
-  $('#allday').on('click',function() {
-    
-    kye_today = null;
-    kye_skeyword = null;
-    kye_sfavo = null;
-
-    getallday();
-
-    $('#table').empty();
-    $('#iimg').empty();
-    $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
-  });
-});
+//$(function() {
+//  $('#allday').on('click',function() {
+//    
+//    kye_date = null;
+//    kye_skeyword = null;
+//    kye_sfavo = null;
+//
+//    getallday();
+//
+//    $('#table').empty();
+//    $('#iimg').empty();
+//    $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');
+//  });
+//});
 
 //TODAY
+//$(function() {
+// $('#today').on('click',function() {
+//      kye_date = today();
+//      gettoday();
+//      $('#table').empty();
+//      $('#iimg').empty();
+//      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');  
+//  });
+//});
+
+//DATE
 $(function() {
-  $('#today').on('click',function() {
-      kye_today = today();
-      gettoday();
-      $('#table').empty();
-      $('#iimg').empty();
-      $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>');  
-  });
+  $('#dateddmenu').on('click',function() {
+    var key = $("#dateddmenu").val();
+    kye_date = key;
+
+    //ALL DAYの場合condition初期化
+    if (kye_date == 'all') {
+      kye_date = null;
+      kye_skeyword = null;
+      kye_sfavo = null;
+    }
+    gettoday();
+    disprunning();
+/*     $('#table').empty();
+    $('#iimg').empty();
+    $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>'); 
+ */  });
 });
 
-//プルダウン選択時
+//キーワードプルダウン選択時
 $(function() {
   $('#ddmenu').on('click',function() {
     var key = $("#ddmenu").val();
     kye_skeyword = key;
     skeyword();
+    disprunning();
+  });
+});
+
+//お気に入りプルダウン選択時
+$(function() {
+  $('#favoddmenu').on('click',function() {
+    var key = $("#favoddmenu").val();
+    kye_sfavo = key;
+    gosfavo();
+    disprunning();
   });
 });
 
@@ -562,7 +549,7 @@ $(function() {
   });
 });
 
-//モーダルmemo
+//モーダルMEMO
 $(function(){ 
   $(document).on('click','.modalmemo',function() {
     var id = $(this).attr('id');
@@ -575,7 +562,7 @@ $(function(){
   });
 });
 
-//memo
+//MEMO
 $(function(){ 
   $('#save').on('click',function(){
     var id = $("#save").attr('memo-id');
@@ -598,13 +585,13 @@ $(function() {
 });
 
 //お気に入り検索
-$(function() {
-  $('#sfavo').on('click',function() {
-    kye_sfavo = 1;
-    gosfavo();
-    console.log('sfavo');
-  });
-});
+//$(function() {
+//  $('#sfavo').on('click',function() {
+//    kye_sfavo = 1;
+//    gosfavo();
+//    console.log('sfavo');
+//  });
+//});
 
 //削除
 $(function() {
@@ -707,7 +694,6 @@ function show(data) {
     } else {
       var memocolor = 'btn-warning';
     }
-
     $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" memo="'+ memo + '" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+ memo +'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     }  
   });
@@ -716,7 +702,8 @@ function show(data) {
         // 二回目以降の描画の場合、初期化が必要
         table.clear();
         table.destroy();
-        $("#data-table tbody").empty();
+        //$("#data-table tbody").empty();
+        $("#data-table table").empty();
     }
 
   table = $(function($){
@@ -725,9 +712,12 @@ function show(data) {
       "aaData": data.data, 
       lengthMenu: [ 10, 20, 30, 40, 50, 100, 200, 300, 500 ],
       displayLength: 20,
+      scrollX: true,
       columnDefs: [
         { targets: 1, width: 50 },
         { targets: 2, width: 50 },
+        { targets: 3, width: 50 },
+        { targets: 4, width: 100 },
         { targets: 6, width: 500 },
         { targets: 9, width: 50 }
     ]
@@ -785,7 +775,7 @@ function exportCSV(items, delimiter, filename) {
 }
 
 function output(){
-    console.log(savedata);
+    //console.log(savedata);
     if (savedata == null || savedata == 0) {
       alert("No data");
     } else {

@@ -297,7 +297,7 @@ def dbconn(qerytype, cond):
                 condition = "AND dt LIKE '%" + kye_today + "%'"
             if kye_skeyword is not None and kye_skeyword != 'all':
                 condition = condition + " AND img_id = '" + kye_skeyword + "'"
-            if kye_sfavo is not None:
+            if kye_sfavo is not None and kye_sfavo != 'all':
                 condition = condition + " AND favorite = '" + str(kye_sfavo) + "'"
     else:
         condition = cond
