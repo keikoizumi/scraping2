@@ -708,9 +708,23 @@ function show(data) {
     $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" memo="'+ memo + '" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+ memo +'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
     }  
   });
+
+  //Data Table
+  $(function($){
+    $("#data-table").DataTable({
+      lengthMenu: [ 10, 20, 30, 40, 50, 100, 200, 300, 500 ],
+      displayLength: 50,
+      columnDefs: [
+        { targets: 1, width: 50 },
+        { targets: 2, width: 50 },
+        { targets: 6, width: 500 },
+        { targets: 9, width: 50 }
+    ]
+    });
+  });
+
   return data;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //CSV download
