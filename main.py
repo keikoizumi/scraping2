@@ -306,15 +306,16 @@ def dbconn(qerytype, cond):
     
     try:    
         #接続クエリ
-        if qerytype == ALLDAY:
+        #if qerytype == ALLDAY:
             #ALLDAY
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"
+            #sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC LIMMIT 500"
         #elif qerytype == TODAY:
             #TODAT
             #sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE delflg = '0' " + condition + "ORDER BY dt DESC"
-        elif qerytype == TODAY or qerytype == SKEYWORD:
+        #elif qerytype == TODAY or qerytype == SKEYWORD:
+        if qerytype == TODAY or qerytype == SKEYWORD:
             #キーワード検索
-            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' "+ condition +" ORDER BY dt DESC"
+            sql = "SELECT id,site_id,title,detail,url,img_id,memo,CAST(dt AS CHAR) as dt,favorite,readflg FROM scrapingInfo2 WHERE  delflg = '0' "+ condition +" ORDER BY dt DESC LIMIT 150"
         elif qerytype == GETKEYWORD:
             #キーワード一覧取得
             sql = "SELECT DISTINCT img_id as keyword FROM scrapingInfo2 WHERE delflg = '0' ORDER BY dt DESC"

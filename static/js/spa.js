@@ -51,7 +51,7 @@ function make_condition() {
 function disprunning(){
   $('#table').empty();
   $('#iimg').empty();
-  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;">RUNNING　<img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>'); 
+  $('#table').append('<tr><td><div style="font-style: italic;color: #000000;font-size:xx-large ;font-weight: 700;">INFO</td><td><div style="font-style: italic;color: #0000FF;font-size:xx-large ;font-weight: 700;"> NOW RUNNING ( PLEASE WAIT A MINUTE )  <img src="./static/img/ico/load.gif" width="30" height="30" /></div></td></tr>'); 
 }
 //DISP FAILURE
 function dispfailure(data, XMLHttpRequest, textStatus){
@@ -124,8 +124,8 @@ function scraping(sendkey) {
       }).done(function(data){ 
           //console.log(data);
           gettoday();
+          getkeyword();
           sflag = 0;
-          gettoday();
         }).fail(function(data, XMLHttpRequest, textStatus) {
           sflag = 0;
           dispfailure(data, XMLHttpRequest, textStatus);
@@ -698,19 +698,19 @@ function show(data) {
     }  
   });
 
-    if (table) {
-        // 二回目以降の描画の場合、初期化が必要
-        table.clear();
-        table.destroy();
-        //$("#data-table tbody").empty();
-        $("#data-table table").empty();
-    }
+  if (table) {
+      // 二回目以降の描画の場合、初期化が必要
+      table.clear();
+      table.destroy();
+      //$("#data-table tbody").empty();
+      $("#data-table table").empty();
+  }
 
   table = $(function($){
     $("#data-table").DataTable({
       destroy: true, 
       "aaData": data.data, 
-      lengthMenu: [ 10, 20, 30, 40, 50, 100, 200, 300, 500 ],
+      lengthMenu: [ 10, 20, 50, 100, 150 ],
       displayLength: 20,
       scrollX: true,
       columnDefs: [
