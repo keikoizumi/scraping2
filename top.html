@@ -29,8 +29,76 @@ color: #222222;
 <body>
 
   <!-- nav配置 -->
-  
-  <nav class="navbar navbar-expand-md  navbar-light shadow sticky-top" style="background-color: rgb(1, 1, 1);">
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <div class="navbar-brand"><img src="./static/img/ico/images.png" width="70" height="60" alt="ロゴ"></div>
+      <div class="d-inline-block mr-5" style="font-style: italic;color: aliceblue;font-size:xx-large ;font-weight: 700;">
+         WSwP
+      </div>
+    <div class= "m-2 mt-3">
+      <div class="row">
+        <div class="float-right col-md">
+          <div class="d-inline-block">
+            <div class="m-2 ml-5">
+              <button type="button" class="btn btn-success btn-lg shadow" data-toggle="modal" data-target="#exampleModal" style="font-weight: 600;">SCRAPING</button>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+              <div id="allday">
+                <a href="#" class="btn btn-primary btn-lg shadow" role="button" style="font-weight: 600;">ALL DATA</a>
+              </div>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+              <div id="today">
+                <a href="#" class="btn btn-primary btn-lg shadow" role="button" style="font-weight: 600;">TODAY'S DATA</a>
+              </div>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+              <div class="dropdown">
+                <select id="ddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                  KEY WORDS
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+                <button type="button" id="sfavo" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">FAVORITE</button>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+              <div class="csv">
+                <a href="#" class="btn btn-secondary btn-lg shadow"  role="button" onclick="output();return false;">CSV DOWNLOAD</a>
+              </div>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
+                <button type="button" id="del" class="btn btn-danger btn-lg shadow" style="font-weight: 600;">KEY DELETE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <!--<form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    -->
+    </div>
+  </nav>
+
+  <!--
+  <nav class="navbar navbar-expand-md navbar-light shadow sticky-top" style="background-color: rgb(1, 1, 1);">
     <div class="navbar-brand"><img src="./static/img/ico/images.png" width="70" height="60" alt="ロゴ"></div>
       <div class="d-inline-block mr-5" style="font-style: italic;color: aliceblue;font-size:xx-large ;font-weight: 700;">
          WSwP
@@ -71,18 +139,6 @@ color: #222222;
                 <button type="button" id="sfavo" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">FAVORITE</button>
             </div>
           </div>
-          <!--<div class="d-inline-block">
-            <div class="m-2">
-              <button type="button" id="ddfavorite"
-                class="btn btn-warning btn-lg shadow">
-            　  FAVORITE
-         　 　</button>
-          　　<div class="dropdown-menu" aria-labelledby="ddfavorite">
-                <a class="dropdown-item" href="#">登録済</a>
-                <a class="dropdown-item" href="#">未録済</a>
-              </div>
-            </div>
-          </div>-->
           <div class="d-inline-block">
             <div class="m-2">
               <div class="csv">
@@ -98,7 +154,8 @@ color: #222222;
         </div>
       </div>
     </div>
-  </nav>
+  </nav> 
+-->
 
   <!-- データ配置 -->
   <div class="m-1">
