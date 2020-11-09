@@ -6,7 +6,7 @@
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
- <link rel="icon" href="./static/img/ico/favicon.ico">
+ <link rel="icon" href="./static/img/ico/snake.ico">
 
  <!-- Bootstrap CSS -->
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -25,28 +25,38 @@
  a:visited {
  color: #222222;
  }
+
+ .btn-color {
+  background-color:#000080;
+  color:azure;
+ }
+
+ .btn:hover{
+  background-color:#000033;
+ }
 </style>
-<title>WSwP</title> 
+<title>Lampropeltis</title> 
 
 </head>
 <body>
 
   <!-- nav配置 -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+  <nav class="navbar navbar-expand-lg bg-light sticky-top">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarToggler">
-      <div class="navbar-brand"><img src="./static/img/ico/images.png" width="70" height="60" alt="ロゴ"></div>
-      <div class="d-inline-block mr-5" style="font-style: italic;font-size:xx-large ;font-weight: 700; color: rgb(90, 2, 255);">
-         WSwP
+      <div class="navbar-brand"><img src="./static/img/ico/snake.ico" width="60" height="50" alt="ロゴ"></div>
+      <div class="d-inline-block mr-5" style="font-style:italic;font-size:xx-large ;font-weight: 1000; color: #000099;">
+        Lampropeltis
       </div>
+    
     <div class= "m-2 mt-3">
       <div class="row">
         <div class="float-right col-md">
           <div class="d-inline-block">
             <div class="m-2">
-              <button type="button" class="btn btn-success btn-lg shadow" data-toggle="modal" data-target="#exampleModal" style="font-weight: 600;">SCRAPING</button>
+              <button type="button" class="btn btn-lg btn-color text-white" data-toggle="modal" data-target="#exampleModal" style="font-weight: 600;">SCRAPING</button>
             </div>
           </div>
           <!--
@@ -68,7 +78,7 @@
           <div class="d-inline-block">
             <div class="m-2">
               <div class="dropdown">
-                <select id="dateddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                <select id="dateddmenu" class="btn btn-color btn-lg text-white" style="font-weight: 600;">
                   DATE
                   <option value="all" style="font-weight: 600;" >ALL DAY (MAX 150)</option>
                   <option value="today"style="font-weight: 600;" >TODAY</option>
@@ -79,7 +89,7 @@
           <div class="d-inline-block">
             <div class="m-2">
               <div class="dropdown">
-                <select id="ddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                <select id="ddmenu" class="btn btn-color btn-lg text-white" style="font-weight: 600;">
                   KEY WORDS
                 </select>
               </div>
@@ -88,7 +98,7 @@
           <div class="d-inline-block">
             <div class="m-2">
               <div class="dropdown">
-                <select id="favoddmenu" class="btn btn-warning btn-lg shadow" style="font-weight: 600;">
+                <select id="favoddmenu" class="btn btn-color btn-lg text-white" style="font-weight: 600;">
                   FAVORITE
                   <option value="all">ALL FAVORITE</option>
                   <option value="1"style="font-weight: 600;" >ONLY FAVORITE</option>
@@ -106,14 +116,21 @@
           -->
           <div class="d-inline-block">
             <div class="m-2">
+                <button type="button" id="del" class="btn btn-color btn-lg text-white" style="font-weight: 600;">KEY DELETE</button>
+            </div>
+          </div>
+          <div class="d-inline-block">
+            <div class="m-2">
               <div class="csv">
-                <a href="#" class="btn btn-primary btn-lg shadow text-white"  role="button" onclick="output();return false;">CSV DOWNLOAD</a>
+                <a href="#" class="btn-lg" role="button" onclick="output();return false;" style="font-weight: 600;color: blue;">CSV DOWNLOAD</a>
               </div>
             </div>
           </div>
           <div class="d-inline-block">
             <div class="m-2">
-                <button type="button" id="del" class="btn btn-danger btn-lg shadow text-white" style="font-weight: 600;">KEY DELETE</button>
+              <div id="blog">
+                <a href="http://kkblog.net/" class="btn-lg" role="button" style="font-weight: 600;color: blue;">BLOG</a>
+              </div>
             </div>
           </div>
           <!--
@@ -129,15 +146,14 @@
   </nav>
 
   <!-- データ配置 -->
-
   <div class="m-2">
     <!--<span class="count">0</span><b>件</b>-->
     <div class="display-area">
       <div>
         <table id="data-table" class="table table-hover table-responsive">
           <thead>
-            <tr>
-              <th>#⃣</th>
+            <tr class="text-center" style="font-size:large;">
+              <th>ID</th>
               <th>お気に入り</th>
               <th>未読既読</th>
               <th>メモ</th>
@@ -155,7 +171,7 @@
         <div id="iimg"></div>
       </div>
       <!-- モーダル部分始まり -->
-  
+      <!--
       <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="delete" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
@@ -171,7 +187,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>-->
 
       <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -183,8 +199,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                  <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label><br>
-                 <!-- page : <p>
+                  <!-- <label for="recipient-name" class="col-form-label"><b>Scraping key word</b></label><br>
+                 page : <p>
                             <button class="btn btn-secondary shadow" onclick="countUp();">＋</button>
                                 <span id="pageCount" style="margin: 10px;">1</span>
                                 <button class="btn btn-secondary shadow" onclick="countDown();">−</button>
@@ -210,7 +226,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                  <label for="textarea1-name" class="col-form-label"><b>MEMO</b></label><br>
+                  <label for="textarea1-name" class="col-form-label"><b>メモ</b></label><br>
                   <textarea id="textmemo" class="form-control"></textarea>
                 </div>
                 <div class="modal-footer">
@@ -225,7 +241,7 @@
     </div>
   </div>
  <footer class="bg-light" style="background-color: rgb(1, 1, 1);">
-  <div style="font-style: italic;color: black;font-size:larger;">© 2020 KEI inc. v20.10.19</div>
+  <div style="font-style: italic;color: black;font-size:larger;">© 2020 KEI inc. v20.10.21</div>
  </footer>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
