@@ -126,6 +126,7 @@ function scraping(sendkey) {
           gettoday();
           getkeyword();
           sflag = 0;
+          savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           sflag = 0;
           dispfailure(data, XMLHttpRequest, textStatus);
@@ -154,6 +155,7 @@ function gettoday() {
           show(data);
           //console.log(data);
         }
+        savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           dispfailure(data, XMLHttpRequest, textStatus);
       });
@@ -200,7 +202,6 @@ function getkeyword() {
           data : null,
           scriptCharset: 'utf-8',
       }).done(function(data) { 
-        console.log(data);
           if (data == null || data == '' || data[0] == '') {
             dispnodata();
           } else {
@@ -210,6 +211,7 @@ function getkeyword() {
               $("#ddmenu").append('<option value="'+data[i].keyword+'"style="font-weight: 600;" >'+data[i].keyword+'</option>');
             }
           }
+          savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           dispfailure(data, XMLHttpRequest, textStatus);
       });
@@ -263,6 +265,7 @@ function delwords() {
               $('#table').append('<tr><td>'+data[i].keyword+'</td><td><button type="button" id="'+data[i].keyword+'" class="godel btn-danger" class="btn btn-primary">DELETE</button></td></tr>');
             }
           }
+          savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           dispfailure(data, XMLHttpRequest, textStatus);
       });
@@ -288,6 +291,7 @@ function godelwords(sendkey) {
           console.log(data);
           delwords();
           getkeyword();
+          savedata = data;
         }).fail(function(data, XMLHttpRequest, textStatus) {
           dispfailure(data, XMLHttpRequest, textStatus);
       });
@@ -558,7 +562,9 @@ $(function(){
     console.log(id);
     console.log(memo);
     $('#save').attr('memo-id', id);
-    $('#textmemo').text(memo);
+    if (memo != "メモはありません" ) {
+      $('#textmemo').text(memo);
+    }
   });
 });
 
@@ -658,7 +664,7 @@ function show(data) {
     var favorite = data[i].favorite;
     if (favorite == '0') {
       var favo = 1;
-      var favoword = '未登録';
+      var favoword = '登録';
       var color = 'btn-primary'
     } else if (favorite == '1') {
       var favo = 0;
@@ -670,12 +676,12 @@ function show(data) {
     var readflg = data[i].readflg;
     if (readflg == '0') {
       var read = 1;
-      var readword = '未読';
+      var readword = '既読';
       var readcolor = 'btn-primary'
       var readedcolor = '';
     } else if (readflg == '1') {
       var read = 0;
-      var readword = '既読';
+      var readword = '未読';
       var readcolor = 'btn-secondary';
       var readedcolor = 'table-dark';
     } 
@@ -692,9 +698,9 @@ function show(data) {
       memo = 'メモはありません'
       var memocolor = '';
     } else {
-      var memocolor = 'btn-warning';
+      var memocolor = '#e0ffff';
     }
-    $('#table').append('<tr class="'+ readedcolor +'"><td><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'">'+ readword +'</button></td><td><button type="button" id="'+data[i].id+'" memo="'+ memo + '" class="modalmemo btn btn-success" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td>'+detail+'</td><td><div class="'+ memocolor +'">'+ memo +'</div></td><td>&emsp;('+data[i].dt+')</td><td><button type="button" id="'+data[i].id+'" class="one-del btn-danger">削除</button></td></tr>');
+    $('#table').append('<tr class="'+ readedcolor +' style=""><td class="text-center"><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'" style="border-radius: 3px;">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'" style="border-radius: 3px;">'+ readword +'</button></td><td><button id="'+data[i].id+'" memo="'+ memo + '" class="btn btn-color modalmemo" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td><b>'+detail+'</b></td><td style="background-color:'+ memocolor +'"><div><b>'+ memo +'</b></div></td><td><b>&emsp;('+data[i].dt+')</b></td><td><button type="button" id="'+data[i].id+'" class="one-del btn btn-color" style="border-radius: 3px;">削除</button></td></tr>');
     }  
   });
 
