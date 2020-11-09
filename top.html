@@ -13,6 +13,8 @@
  
  <!-- DataTable CSS -->
  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-theme.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
  
  <style>
  .count {
@@ -129,17 +131,15 @@
           <div class="d-inline-block">
             <div class="m-2">
               <div id="blog">
-                <a href="http://kkblog.net/" class="btn-lg" role="button" style="font-weight: 600;color: blue;">BLOG</a>
+                <a href="http://kkblog.net/" target="_blank" class="btn-lg" role="button" style="font-weight: 600;color: blue;">BLOG</a>
               </div>
             </div>
           </div>
-          <!--
           <div class="d-inline-block">
             <div class="m-2">
-                <button type="button" id="regist" class="btn btn-danger btn-lg shadow" style="font-weight: 600;">REGIST</button>
+              <button type="button" class="btn btn-lg btn-color text-white" data-toggle="modal" data-target="#regist" style="font-weight: 600;">REGIST</button>
             </div>
         </div>
-        -->
       </div>
     </div>
     </div>
@@ -171,23 +171,33 @@
         <div id="iimg"></div>
       </div>
       <!-- モーダル部分始まり -->
-      <!--
-      <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="delete" aria-hidden="true">
+      
+      <div class="modal fade" id="regist" tabindex="-1" role="dialog" aria-labelledby="regist" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="delete">Notice</h5>
+              <h5 class="modal-title" id="regist"></h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">delete</div>
+            <div class="form-group">
+              <label for="textarea1-keyword" class="col-form-label"><b>KEY WORD</b><span class="badge badge-danger"> 必須</span></label><br>
+                <input type="text" id="regist-keyword" class="form-control" required="required"></input>
+              <label for="textarea1-title" class="col-form-label"><b>TITLE</b><span class="badge badge-danger"> 必須</span></label><br>
+                <input type="text" id="regist-title" class="form-control"></input>
+              <label for="textarea1-title" class="col-form-label"><b>DETAIL</b></label><br>
+                <input type="text" id="regist-detail" class="form-control"></input>
+              <label for="textarea1-url" class="col-form-label"><b>URL</b><span class="badge badge-danger">必須</span></label><br>
+                <input type="text" id="regist-url" class="form-control"></input>
+            </div>
             <div class="modal-footer">
-              <button type="button" id="godel" class="btn btn-secondary" data-dismiss="modal">OK</button>
+              <button type="button" id="goregist" class="btn btn-primary" data-dismiss="modal">SAVE</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
             </div>
           </div>
         </div>
-      </div>-->
+      </div>
 
       <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">

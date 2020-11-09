@@ -28,6 +28,7 @@ DELREAD = 'delread'
 ALLCOUNT = 'allcount'
 MEMO = 'memo'
 SFAVO = 'SFAVO'
+NEWREGIST = 'newregist'
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -233,6 +234,23 @@ def memo():
     qerytype = MEMO
     dbconnmemo(qerytype, id ,textmemo)
 
+#新規登録
+@post('/goregist')
+def goregist():
+    #値取得
+    data = request.json
+    qerytype = NEWREGIST
+    url = dbconn(qerytype, data)
+    #ID NULLチェック
+    if isUrlCheck(url):
+        print('checkedUrl:')
+        #json作成
+        jsonUrl = makeJson(url)
+        print(type(jsonUrl))
+        return jsonUrl
+    else:
+        return gettoday()
+
 i = 0
 def isUrlCheck(url):
     if url == None:
@@ -299,6 +317,15 @@ def dbconn(qerytype, cond):
                 condition = condition + " AND img_id = '" + kye_skeyword + "'"
             if kye_sfavo is not None and kye_sfavo != 'all':
                 condition = condition + " AND favorite = '" + str(kye_sfavo) + "'"
+    elif qerytype == NEWREGIST:
+        keyword = cond['keyword']
+        title = cond['title']
+        detail = cond['detail']
+        url = cond['url']
+        now = datetime.datetime.now()
+        dt = "{0:%Y-%m-%d %H:%M:%S}".format(now)
+        strdt = str(dt)
+        condition = ''
     else:
         condition = cond
     
@@ -342,11 +369,12 @@ def dbconn(qerytype, cond):
             sql = "UPDATE scraping.scrapinginfo2 SET readflg = '0' WHERE id = '"+condition+"'"
         elif qerytype == ALLCOUNT:
             sql = "SELECT count(*) as allcount FROM scrapingInfo2 WHERE delflg = '0'"
-
+        elif qerytype == NEWREGIST:
+            sql = "INSERT INTO scraping.scrapingInfo2(site_id,title,detail,url,img_id,dt) VALUES (2,'"+ title +"','"+ detail +"','"+ url +"','"+ keyword +"','"+ dt +"')"
         print(sql)
 
         #クエリ発行
-        if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO or qerytype == REGREAD or qerytype == DELREAD:
+        if qerytype == DEL or qerytype == DELONE or qerytype == REGFAVO or qerytype == DELFAVO or qerytype == REGREAD or qerytype == DELREAD or qerytype == NEWREGIST:
             print("update/del")
             cur.execute(sql)
             conn.commit()
@@ -424,13 +452,13 @@ def scraping(sendkey):
     print("scraping start")
     print(sendkey)
     # Chrome Optionsの設定
-    options = Options()
-    options.add_argument('--headless')                 # headlessモードを使用する
-    options.add_argument('--disable-gpu')              # headlessモードで暫定的に必要なフラグ(そのうち不要になる)
-    options.add_argument('--disable-extensions')       # すべての拡張機能を無効にする。ユーザースクリプトも無効にする
-    options.add_argument('--proxy-server="direct://"') # Proxy経由ではなく直接接続する
-    options.add_argument('--proxy-bypass-list=*')      # すべてのホスト名
-    options.add_argument('--start-maximized')          # 起動時にウィンドウを最大化する
+    #options = Options()
+    #options.add_argument('--headless')                 # headlessモードを使用する
+    #options.add_argument('--disable-gpu')              # headlessモードで暫定的に必要なフラグ(そのうち不要になる)
+    #options.add_argument('--disable-extensions')       # すべての拡張機能を無効にする。ユーザースクリプトも無効にする
+    #options.add_argument('--proxy-server="direct://"') # Proxy経由ではなく直接接続する
+    #options.add_argument('--proxy-bypass-list=*')      # すべてのホスト名
+    #options.add_argument('--start-maximized')          # 起動時にウィンドウを最大化する
     driver = webdriver.Chrome(BASE_DIR+'./static/chromedriver.exe')
     driver.get('https://www.google.com/')
     driver.implicitly_wait(30)
