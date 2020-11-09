@@ -424,6 +424,36 @@ function goread(sendkey, type) {
   });
 }
 
+//スクレイピング
+function goregist(keyword, title, detail, url) {  
+  $(function(){
+    var targetUrl = tUrl+'goregist';
+    //console.log(sendkey);
+    var request = {
+      'keyword': keyword,
+      'title': title,
+      'detail': detail,
+      'url': url
+    };
+      $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        contentType: 'application/JSON',
+        data : JSON.stringify(request),
+        scriptCharset: 'utf-8',
+      }).done(function(data){ 
+          //console.log(data);
+          gettoday();
+          getkeyword();
+          sflag = 0;
+          savedata = data;
+        }).fail(function(data, XMLHttpRequest, textStatus) {
+          sflag = 0;
+          dispfailure(data, XMLHttpRequest, textStatus);
+      });
+  });
+}
+
 window.onload = function() {
   //allcount();
   kye_date = null;
@@ -643,6 +673,17 @@ $(function() {
   });
 });
 
+//新規登録
+$(function(){ 
+  $('#goregist').on('click',function(){
+    var keyword = $("#regist-keyword").val();
+    var title = $("#regist-title").val();
+    var detail = $("#regist-detail").val();
+    var url = $("#regist-url").val();
+    goregist(keyword, title, detail, url);
+  });
+});
+
 //テーブル表示
 function show(data) {
   $(function() {
@@ -698,7 +739,7 @@ function show(data) {
       memo = 'メモはありません'
       var memocolor = '';
     } else {
-      var memocolor = '#e0ffff';
+      var memocolor = '#ffa500';
     }
     $('#table').append('<tr class="'+ readedcolor +' style=""><td class="text-center"><b>'+ no +'</b></td><td><button type="button" id="' + favo + data[i].id+ '" class="favorite '+ color +'" style="border-radius: 3px;">'+ favoword +'</button></td><td><button type="button" id="' + read + data[i].id+ '" class="read '+ readcolor +'" style="border-radius: 3px;">'+ readword +'</button></td><td><button id="'+data[i].id+'" memo="'+ memo + '" class="btn btn-color modalmemo" data-toggle="modal" data-target="#memo">メモ</button></td><td><b>'+data[i].img_id+'</b></td><td><b><a href='+data[i].url+' target="_blank" style="font-size:large;">'+data[i].title+'</a></b></td><td><b>'+detail+'</b></td><td style="background-color:'+ memocolor +'"><div><b>'+ memo +'</b></div></td><td><b>&emsp;('+data[i].dt+')</b></td><td><button type="button" id="'+data[i].id+'" class="one-del btn btn-color" style="border-radius: 3px;">削除</button></td></tr>');
     }  
